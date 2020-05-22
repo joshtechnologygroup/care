@@ -15,11 +15,14 @@ class PasswordUpdateSerializer(ModelSerializer):
     class Meta:
         model = accounts_models.User
         fields = ('password',)
+        extra_kwargs = {
+            'password': {'write_only': True,'required': True},
+        }
 
-    def validate(self, attrs):
-        password_validation.validate_password(attrs['password'])
-        attrs['password'] = hashers.make_password(attrs['password'])
-        return super(PasswordUpdateSerializer, self).validate(attrs)          
+    def validate_password(self, password):
+        password_validation.validate_password(password)
+        password = hashers.make_password(password)
+        return password            
 
 
 class UserSerializer(PasswordUpdateSerializer, UserInfoUpdateSerializer):
@@ -28,11 +31,6 @@ class UserSerializer(PasswordUpdateSerializer, UserInfoUpdateSerializer):
         model = accounts_models.User
         fields = ('district','user_type','email',) + PasswordUpdateSerializer.Meta.fields + UserInfoUpdateSerializer.Meta.fields
         extra_kwargs = {
-            'password': {'write_only': True},
+            'password': {'write_only': False,'required': False},
             'user_type': {'write_only': True}
-        }
-
-    def validate(self, attrs):
-        if attrs.get('password') is None:
-            return super(UserInfoUpdateSerializer, self).validate(attrs)
-        return super().validate(attrs)    
+        }  

@@ -7,14 +7,8 @@ class UserInfoUpdateSerializer(ModelSerializer):
 
     class Meta:
         model = accounts_models.User
-        fields = ('first_name','last_name', 'phone_number')
-        # extra_kwargs = {
-        #     'district': {'write_only': True},
-        # }
-    def validate(self, attrs):
-        print('aaaaa')
-        # attrs['manager'] = self.context['request'].user
-        return attrs    
+        fields = ('first_name','last_name', 'phone_number',)
+
 
 class PasswordUpdateSerializer(ModelSerializer):
 
@@ -23,27 +17,22 @@ class PasswordUpdateSerializer(ModelSerializer):
         fields = ('password',)
 
     def validate(self, attrs):
-        print(attrs,"password")
-        password_validation.validate_password(data['password'])
-        data['password'] = hashers.make_password(data['password'])
-        return attrs          
+        password_validation.validate_password(attrs['password'])
+        attrs['password'] = hashers.make_password(attrs['password'])
+        return super(PasswordUpdateSerializer, self).validate(attrs)          
 
 
 class UserSerializer(PasswordUpdateSerializer, UserInfoUpdateSerializer):
 
     class Meta:
         model = accounts_models.User
-        fields = ('district','user_type',) + PasswordUpdateSerializer.Meta.fields + UserInfoUpdateSerializer.Meta.fields
+        fields = ('district','user_type','email',) + PasswordUpdateSerializer.Meta.fields + UserInfoUpdateSerializer.Meta.fields
         extra_kwargs = {
-            'district': {'write_only': True},
             'password': {'write_only': True},
+            'user_type': {'write_only': True}
         }
 
-    # def validate(self, attrs):
-    #     return super().validate(attrs)
-    #     attrs.validate_password
-    #     attrs['manager'] = self.context['request'].user
-    #     return attrs        
-
-    def update(self, instance, validated_data):
-        return super(UserSerializer, self).update(instance, validated_data)
+    def validate(self, attrs):
+        if attrs.get('password') is None:
+            return super(UserInfoUpdateSerializer, self).validate(attrs)
+        return super().validate(attrs)    

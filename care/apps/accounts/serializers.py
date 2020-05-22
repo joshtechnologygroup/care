@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from apps.accounts import models as accounts_models
 from django.contrib.auth import password_validation, hashers
 
+
 class UserSerializer(rest_serializers.ModelSerializer):
 
     def validate_password(self, password):
@@ -15,9 +16,9 @@ class UserSerializer(rest_serializers.ModelSerializer):
 
     class Meta:
         model = accounts_models.User
-        fields = ('district', 'user_type', 'email','first_name', 'last_name', 'phone_number','password',)
+        fields = ('district', 'user_type', 'email', 'first_name', 'last_name', 'phone_number', 'password',)
         extra_kwargs = {
-            'password': {'write_only':True, 'required': False},
+            'password': {'write_only': True, 'required': False},
             'user_type': {'write_only': True}
         }
 

@@ -46,6 +46,7 @@ class FacilityViewSet(
     )
     filterset_class = facility_filters.FacilityFilter
     pagination_class = commons_pagination.CustomPagination
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         filter_kwargs = {}
@@ -77,6 +78,7 @@ class FacilityUserViewSet(
     """
 
     serializer_class = facility_serializers.FacilityUserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         queryset = facility_models.FacilityUser.objects.all()
@@ -96,6 +98,7 @@ class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = facility_models.FacilityType.objects.all()
     serializer_class = facility_serializers.FacilityTypeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class InventoryViewSet(
@@ -120,6 +123,7 @@ class InventoryViewSet(
     filterset_class = facility_filters.InventoryFilter
     serializer_class = facility_serializers.InventorySerializer
     pagination_class = commons_pagination.CustomPagination
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class FacilityStaffViewSet(
@@ -135,6 +139,7 @@ class FacilityStaffViewSet(
     queryset = facility_models.FacilityStaff.objects.all()
     serializer_class = facility_serializers.FacilityStaffSerializer
     pagination_class = commons_pagination.CustomPagination
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class FacilityInfrastructureViewSet(
@@ -150,6 +155,7 @@ class FacilityInfrastructureViewSet(
     queryset = facility_models.FacilityInfrastructure.objects.all()
     serializer_class = facility_serializers.FacilityInfrastructureSerializer
     pagination_class = commons_pagination.CustomPagination
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class InventoryItemViewSet(
@@ -162,3 +168,4 @@ class InventoryItemViewSet(
     queryset = facility_models.InventoryItem.objects.order_by('name').all()
     serializer_class = facility_serializers.InventoryItemSerializer
     pagination_class = None
+    permission_classes = (permissions.IsAuthenticated,)

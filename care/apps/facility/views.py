@@ -158,4 +158,5 @@ class InventoryItemViewSet(
 
     queryset = facility_models.InventoryItem.objects.order_by('name').all()
     serializer_class = facility_serializers.InventoryItemSerializer
+    pagination_class = None
     permission_classes = (permissions.IsAuthenticated,)

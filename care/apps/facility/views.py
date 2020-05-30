@@ -64,8 +64,8 @@ class FacilityViewSet(
     def short(self, *args, **kwargs):
         return Response(
             facility_serializers.FacilityShortSerializer(
-                instance=facility_models.Facility.objects.order_by('name').all(),
-                many=True
+                instance=facility_models.Facility.objects.order_by("name").all(),
+                many=True,
             ).data
         )
 
@@ -125,6 +125,13 @@ class InventoryViewSet(
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
 
+    def get_serializer_class(self):
+        return (
+            facility_serializers.InventoryUpdateSerializer
+            if self.request.method in ("PATCH", "PUT")
+            else self.serializer_class
+        )
+
 
 class FacilityStaffViewSet(
     mixins.CreateModelMixin,
@@ -165,7 +172,7 @@ class InventoryItemViewSet(
     ViewSet for Inventory Item add, list and update
     """
 
-    queryset = facility_models.InventoryItem.objects.order_by('name').all()
+    queryset = facility_models.InventoryItem.objects.order_by("name").all()
     serializer_class = facility_serializers.InventoryItemSerializer
     pagination_class = None
     permission_classes = (permissions.IsAuthenticated,)

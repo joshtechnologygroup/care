@@ -147,20 +147,21 @@ class InventoryItem(models.Model):
         return f"{self.name}"
 
 
-
 class Inventory(commons_models.TimeStampModel):
-    facility = models.ForeignKey(
-        "Facility", on_delete=models.CASCADE, null=False, blank=False
-    )
+    facility = models.ForeignKey("Facility", on_delete=models.CASCADE,)
     item = models.ForeignKey("InventoryItem", on_delete=models.CASCADE)
     required_quantity = models.PositiveIntegerField(default=0)
     current_quantity = models.PositiveIntegerField(default=0)
-    created_by = models.ForeignKey(accounts_models.User, on_delete=models.CASCADE)
+    updated_by = models.ForeignKey(accounts_models.User, on_delete=models.CASCADE)
 
     history = HistoricalRecords()
 
+    def __str__(self):
+        return f"{self.facility}::{self.item}"
+
     class Meta:
         verbose_name_plural = "Inventories"
+        unique_together = (("facility", "item"),)
 
 
 class FacilityUser(commons_models.SoftDeleteTimeStampedModel):
@@ -191,7 +192,7 @@ class TestingLab(commons_models.AddressModel):
     ]
     LAB_OWNERSHIP_CHOICES = [
         (commons_facility_constants.LAB_OWNERSHIP_CHOICES.GOVERNMENT, "GOVERNMENT"),
-        (commons_facility_constants.LAB_OWNERSHIP_CHOICES.PRIVATE, "PRIVATE")
+        (commons_facility_constants.LAB_OWNERSHIP_CHOICES.PRIVATE, "PRIVATE"),
     ]
     code = models.CharField(
         max_length=commons_constants.FIELDS_CHARACTER_LIMITS["LOCALBODY_CODE"],
@@ -203,7 +204,8 @@ class TestingLab(commons_models.AddressModel):
         help_text="Name of the Testing Lab",
     )
     lab_ownership_type = models.IntegerField(
-        choices=LAB_OWNERSHIP_CHOICES, default=commons_facility_constants.LAB_OWNERSHIP_CHOICES.GOVERNMENT
+        choices=LAB_OWNERSHIP_CHOICES,
+        default=commons_facility_constants.LAB_OWNERSHIP_CHOICES.GOVERNMENT,
     )
     lab_type = models.IntegerField(
         choices=LAB_TYPE_CHOICES, default=commons_facility_constants.LAB_TYPE_CHOICES.BC

@@ -51,7 +51,10 @@ class FacilityViewSet(
         filter_kwargs = {}
         if self.request.user.user_type:
             if self.request.user.user_type.name == commons_constants.FACILITY_USER:
-                filter_kwargs["facilityuser__user"] = self.request.user
+                facility_ids = list(facility_models.FacilityUser.objects.filter(
+                    user_id=self.request.user.id
+                ).values_list('facility_id', flat=True))
+                filter_kwargs["facility_id__in"] = facility_ids
             elif self.request.user.user_type.name == commons_constants.PORTEA:
                 filter_kwargs["id__in"] = []
         return facility_models.Facility.objects.filter(**filter_kwargs)

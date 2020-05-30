@@ -21,7 +21,6 @@ class FacilityViewSet(
     ViewSet for Facility list and create
     """
 
-    queryset = facility_models.Facility.objects.all()
     serializer_class = facility_serializers.FacilitySerializer
     filter_backends = (
         filters.DjangoFilterBackend,
@@ -46,15 +45,12 @@ class FacilityViewSet(
         "negative_patient",
     )
     filterset_class = facility_filters.FacilityFilter
-    permission_classes = (permissions.IsAuthenticated,)
     pagination_class = commons_pagination.CustomPagination
 
     def get_queryset(self):
         filter_kwargs = {}
-        print(self.request.user.user_type)
         if self.request.user.user_type:
             if self.request.user.user_type.name == commons_constants.FACILITY_USER:
-                print('2121')
                 filter_kwargs["facilityuser__user"] = self.request.user
             elif self.request.user.user_type.name == commons_constants.PORTEA:
                 filter_kwargs["id__in"] = []
@@ -77,9 +73,17 @@ class FacilityUserViewSet(
     ViewSet for FacilityUser add and remove
     """
 
-    queryset = facility_models.FacilityUser.objects.all()
     serializer_class = facility_serializers.FacilityUserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = facility_models.FacilityUser.objects.all()
+        filter_kwargs = {}
+        if self.request.user.user_type:
+            if self.request.user.user_type.name == commons_constants.FACILITY_USER:
+                filter_kwargs["user"] = self.request.user
+            elif self.request.user.user_type.name == commons_constants.PORTEA:
+                return facility_models.FacilityUser.objects.none()
+        return queryset.filter(**filter_kwargs)
 
 
 class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -89,7 +93,6 @@ class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = facility_models.FacilityType.objects.all()
     serializer_class = facility_serializers.FacilityTypeSerializer
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 class InventoryViewSet(
@@ -114,7 +117,6 @@ class InventoryViewSet(
     filterset_class = facility_filters.InventoryFilter
     serializer_class = facility_serializers.InventorySerializer
     pagination_class = commons_pagination.CustomPagination
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 class FacilityStaffViewSet(
@@ -130,7 +132,6 @@ class FacilityStaffViewSet(
     queryset = facility_models.FacilityStaff.objects.all()
     serializer_class = facility_serializers.FacilityStaffSerializer
     pagination_class = commons_pagination.CustomPagination
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 class FacilityInfrastructureViewSet(
@@ -146,7 +147,6 @@ class FacilityInfrastructureViewSet(
     queryset = facility_models.FacilityInfrastructure.objects.all()
     serializer_class = facility_serializers.FacilityInfrastructureSerializer
     pagination_class = commons_pagination.CustomPagination
-    permission_classes = (permissions.IsAuthenticated,)
 
 
 class InventoryItemViewSet(
@@ -159,4 +159,3 @@ class InventoryItemViewSet(
     queryset = facility_models.InventoryItem.objects.order_by('name').all()
     serializer_class = facility_serializers.InventoryItemSerializer
     pagination_class = None
-    permission_classes = (permissions.IsAuthenticated,)

@@ -16,3 +16,4 @@ LOCAL_BODY_CHOICES = (
 )
 
 RESET_PASSWORD_BASE_URL = "reset-password"
+

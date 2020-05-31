@@ -21,14 +21,9 @@ class UserSerializer(rest_serializers.ModelSerializer):
         model = accounts_models.User
         fields = (
             "id",
-            "first_name",
-            "last_name",
+            "name",
             "email",
-            "local_body",
-            "age",
-            "gender",
             "phone_number",
-            "district",
             "user_type",
             "preferred_districts",
         )

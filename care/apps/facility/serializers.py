@@ -2,6 +2,7 @@ from django.utils.translation import ugettext as _
 
 from rest_framework import serializers as rest_serializers
 
+from apps.commons import constants as commons_constants
 from apps.facility import models as facility_models
 
 
@@ -46,6 +47,19 @@ class FacilityUserSerializer(rest_serializers.ModelSerializer):
             "created_by",
         )
 
+    def validate(self, attrs):
+        current_user = self.context['request'].user
+        if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
+            if not current_user.facilityuser_set.filter(facility=attrs['facility']).exists():
+                raise rest_serializers.ValidationError(
+                    _("You do not have permission to perform this action.")
+                )
+        elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
+            raise rest_serializers.ValidationError(
+                _("You do not have permission to perform this action.")
+            )
+        return attrs
+
 
 class FacilityTypeSerializer(rest_serializers.ModelSerializer):
     class Meta:
@@ -68,11 +82,38 @@ class FacilityStaffSerializer(rest_serializers.ModelSerializer):
             "designation",
         )
 
+    def validate(self, attrs):
+        current_user = self.context['request'].user
+        if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
+            if not current_user.facilityuser_set.filter(facility=attrs['facility']).exists():
+                raise rest_serializers.ValidationError(
+                    _("You do not have permission to perform this action.")
+                )
+        elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
+            raise rest_serializers.ValidationError(
+                _("You do not have permission to perform this action.")
+            )
+        return attrs
+
 
 class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = facility_models.FacilityInfrastructure
         fields = ("facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")
+
+
+    def validate(self, attrs):
+        current_user = self.context['request'].user
+        if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
+            if not current_user.facilityuser_set.filter(facility=attrs['facility']).exists():
+                raise rest_serializers.ValidationError(
+                    _("You do not have permission to perform this action.")
+                )
+        elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
+            raise rest_serializers.ValidationError(
+                _("You do not have permission to perform this action.")
+            )
+        return attrs
 
 
 class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):
@@ -83,6 +124,19 @@ class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):
             "occupied_bed",
             "available_bed",
         )
+
+    def validate(self, attrs):
+        current_user = self.context['request'].user
+        if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
+            if not current_user.facilityuser_set.filter(facility=self.instance.facility).exists():
+                raise rest_serializers.ValidationError(
+                    _("You do not have permission to perform this action.")
+                )
+        elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
+            raise rest_serializers.ValidationError(
+                _("You do not have permission to perform this action.")
+            )
+        return attrs
 
 
 class InventorySerializer(rest_serializers.ModelSerializer):

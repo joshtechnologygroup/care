@@ -91,23 +91,17 @@ class FacilityViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.G
         )
 
 
-class FacilityUserViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class FacilityUserViewSet(
+    FacilityDependentFilterQuerysetMixin,
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
+):
     """
     ViewSet for FacilityUser add and remove
     """
 
     serializer_class = facility_serializers.FacilityUserSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        
-        queryset = facility_models.FacilityUser.objects.all()
-        if self.request.user.user_type:
-            if self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
-                queryset = queryset.filter(user=self.request.user)
-            elif self.request.user.user_type.name == commons_constants.PORTEA:
-                return facility_models.FacilityUser.objects.none()
-        return queryset
+    queryset = facility_models.FacilityUser.objects.all()
 
 
 class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

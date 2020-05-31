@@ -148,7 +148,7 @@ class FacilityUser(commons_models.SoftDeleteTimeStampedModel):
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="created_users")
 
     def __str__(self):
-        return f"{self.user.first_name} - {self.facility.name}"
+        return f"{self.user.name} - {self.facility.name}"
 
 
 class TestingLab(commons_models.AddressModel):

@@ -103,8 +103,8 @@ class InventorySerializer(rest_serializers.ModelSerializer):
         validators = [
             rest_serializers.UniqueTogetherValidator(
                 queryset=model.objects.all(),
-                fields=('facility', 'item'),
-                message=_("This Inventory have already added, Update existing one.")
+                fields=("facility", "item"),
+                message=_("This Inventory have already added, Update existing one."),
             )
         ]
 

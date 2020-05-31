@@ -4,7 +4,7 @@ from apps.accounts import models as accounts_models
 from apps.commons import (
     models as commons_models,
     constants as commons_constants,
-    validators as commons_validators
+    validators as commons_validators,
 )
 from apps.facility.models import Facility, TestingLab
 from fernet_fields import EncryptedCharField, EncryptedIntegerField, EncryptedTextField
@@ -64,7 +64,9 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     month = models.PositiveIntegerField(null=True, blank=True)
     year = models.PositiveIntegerField(null=True, blank=True)
     gender = models.IntegerField(choices=commons_constants.GENDER_CHOICES, blank=False)
-    phone_number = EncryptedCharField(max_length=14, validators=[commons_validators.phone_number_regex])
+    phone_number = EncryptedCharField(
+        max_length=14, validators=[commons_validators.phone_number_regex]
+    )
     phone_number_belongs_to = models.PositiveSmallIntegerField(default=1)
     date_of_birth = models.DateField(default=None, null=True)
     nationality = models.CharField(
@@ -139,7 +141,9 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
         verbose_name="Number of people who have chronic diseases living with the patient",
         blank=True,
     )
-    created_by = models.ForeignKey(accounts_models.User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(
+        accounts_models.User, on_delete=models.SET_NULL, null=True
+    )
     is_active = models.BooleanField(
         default=True,
         help_text="Not active when discharged, or removed from the watchlist",
@@ -280,7 +284,9 @@ class PatientTimeLine(models.Model):
         return f"{self.patient.name} - {self.date}"
 
 
-class PatientFamily(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressModel):
+class PatientFamily(
+    commons_models.SoftDeleteTimeStampedModel, commons_models.AddressModel
+):
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE)
     name = models.CharField(max_length=55)
     relation = models.CharField(max_length=55)

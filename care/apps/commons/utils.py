@@ -2,6 +2,7 @@ import csv
 import json
 from django.conf import settings
 
+
 def get_json_fixtures(fixtures):
     json_fixtures = []
     json_fixtures_name = []
@@ -28,6 +29,7 @@ def get_json_fixtures(fixtures):
         json_fixtures.append(json_file_absolute_path)
 
     return json_fixtures, json_fixtures_name
+
 
 def get_absolute_path(file_name):
     return settings.BASE_DIR + "/" + file_name

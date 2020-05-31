@@ -18,7 +18,7 @@ class Command(BaseCommand):
             ("apps/facility/fixtures/facility_user_test.csv", "facility.FacilityUser"),
             ("apps/patients/fixtures/patients_fixture_test.csv", "patients.Patient"),
             ("apps/patients/fixtures/patients_facilities_test.csv", "patients.PatientFacility"),
-            ("apps/accounts/fixtures/district_preference_test.csv", "accounts.UserDistrictPreference")
+            ("apps/accounts/fixtures/district_preference_test.csv", "accounts.UserDistrictPreference"),
         ]
 
         """

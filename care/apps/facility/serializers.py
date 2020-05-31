@@ -144,3 +144,12 @@ class BedTypeSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = facility_models.RoomType
         fields = ("id", "name", "description")
+
+
+class StaffDesignationSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = facility_models.StaffDesignation
+        fields = (
+            "id",
+            "name",
+        )

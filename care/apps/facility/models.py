@@ -80,12 +80,14 @@ class StaffDesignation(models.Model):
 class FacilityStaff(commons_models.SoftDeleteTimeStampedModel):
     facility = models.ForeignKey("Facility", on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=256)
-    phone_number = models.CharField(max_length=14, validators=[commons_validators.phone_number_regex])
-    email = models.EmailField(max_length=50, help_text="email of the facility staff", validators=[EmailValidator],)
+    phone_number = models.CharField(
+        max_length=14, validators=[commons_validators.phone_number_regex], blank=True, null=True
+    )
+    email = models.EmailField(max_length=50, help_text="email of the facility staff", validators=[EmailValidator])
     designation = models.ForeignKey(StaffDesignation, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return str(self.name) + " for facility " + str(self.facility)
+        return f"{self.facility}::{self.name}"
 
 
 class RoomType(models.Model):

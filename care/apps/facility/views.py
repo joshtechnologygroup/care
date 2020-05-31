@@ -191,3 +191,12 @@ class BedTypeViewSet(
     serializer_class = facility_serializers.BedTypeSerializer
     permission_classes = (permissions.IsAuthenticated,)
     pagination_class = None
+
+
+class StaffDesignationViewSet(
+    mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    queryset = facility_models.StaffDesignation.objects.all()
+    serializer_class = facility_serializers.StaffDesignationSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = None

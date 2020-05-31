@@ -24,7 +24,7 @@ class Command(BaseCommand):
         """
         handling unique togetherness of PatientFacility
         """
-        apps.get_model("patients.UserDistrictPreference").objects.hard_delete()
+        apps.get_model("accounts.UserDistrictPreference").objects.all().delete()
         apps.get_model("patients.PatientFacility").objects.hard_delete()
 
         json_fixtures_path, json_fixtures_name = commons_utils.get_json_fixtures(fixtures)

@@ -22,6 +22,9 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
 
 
 class GenderField(rest_serializers.RelatedField):
+    def to_internal_value(self, data):
+        return data
+
     def to_representation(self, value):
         if value == 1:
             return "Male"
@@ -64,6 +67,9 @@ class PatientListSerializer(rest_serializers.ModelSerializer):
             "facility_district",
             "facility_type",
             "ownership_type",
+            "native_state",
+            "native_country",
+            "pincode",
         )
         extra_kwargs = {
             "facility": {"required": True},

@@ -1,3 +1,5 @@
+from django.db import models as django_models
+import django_filters
 from django_filters import rest_framework as filters
 
 from apps.accounts import models as accounts_models
@@ -20,16 +22,13 @@ class FacilityFilter(filters.FilterSet):
 
 
 class InventoryFilter(filters.FilterSet):
-    inventory_type = filters.CharFilter(field_name="item__name")
-    facility_name = filters.CharFilter(field_name="facility__name", lookup_expr="istartswith")
-    required_quantity = filters.RangeFilter(field_name="required_quantity", lookup_expr="range")
-    current_quantity = filters.RangeFilter(field_name="current_quantity", lookup_expr="range")
+    item = filters.CharFilter(field_name="item__name")
+    facility = filters.CharFilter(field_name="facility__name", lookup_expr="istartswith")
+    updated_at = filters.IsoDateTimeFilter()
 
     class Meta:
         model = facility_models.Inventory
-        fields = (
-            "inventory_type",
-            "facility_name",
-            "required_quantity",
-            "current_quantity",
-        )
+        fields = {
+            "current_quantity": ["exact", "range", "gt", "lt"],
+            "required_quantity": ["exact", "range", "gt", "lt"],
+        }

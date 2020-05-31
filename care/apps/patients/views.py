@@ -166,8 +166,10 @@ class PatientTransferViewSet(
     search_fields = (
         "^from_patient_facility__patient__icmr_id",
         "^from_patient_facility__patient__govt_id",
-        "^from_patient_facility__facility__name",
-        "^to_facility__name",
+        "^from_patient_facility__patient__name",
+        "^from_patient_facility__patient__phone_number",
+        "^from_patient_facility__facility__facility_code",
+        "^to_facility__facility_code",
     )
     ordering_fields = (
         "icmr_id",

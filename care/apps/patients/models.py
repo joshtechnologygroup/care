@@ -57,7 +57,7 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     )
     icmr_id = models.CharField(max_length=15, blank=True)
     govt_id = models.CharField(max_length=15, blank=True)
-    name = EncryptedCharField(max_length=200)
+    name = models.CharField(max_length=200)
     month = models.PositiveIntegerField(null=True, blank=True)
     year = models.PositiveIntegerField(null=True, blank=True)
     gender = models.IntegerField(choices=commons_constants.GENDER_CHOICES, blank=False)

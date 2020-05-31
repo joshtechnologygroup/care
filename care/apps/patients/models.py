@@ -61,8 +61,7 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     year = models.PositiveIntegerField(null=True, blank=True)
     gender = models.IntegerField(choices=commons_constants.GENDER_CHOICES, blank=False)
     phone_number = models.CharField(max_length=14, validators=[commons_validators.phone_number_regex])
-    phone_number_belongs_to = models.PositiveSmallIntegerField(default=1)
-    phone_number_belongs_to1 = models.IntegerField(
+    phone_number_belongs_to = models.IntegerField(
         choices=constants.PATIENT_RELATIVE_CHOICES, default=constants.PATIENT_RELATIVE_TYPE_CHOICES.SELF
     )
     date_of_birth = models.DateField(default=None, null=True)

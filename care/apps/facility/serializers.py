@@ -122,6 +122,8 @@ class InventoryUpdateSerializer(InventorySerializer):
             "current_quantity",
         )
 
+        validators = ()
+
 
 class InventoryItemSerializer(rest_serializers.ModelSerializer):
     class Meta:

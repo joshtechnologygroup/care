@@ -54,8 +54,8 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     nearest_facility = models.ForeignKey(
         Facility, on_delete=models.SET_NULL, null=True, related_name="nearest_facility"
     )
-    icmr_id = models.CharField(max_length=15, blank=True)
-    govt_id = models.CharField(max_length=15, blank=True)
+    icmr_id = models.CharField(max_length=15, blank=True, null=True, unique=True)
+    govt_id = models.CharField(max_length=15, blank=True, null=True, unique=True)
     name = models.CharField(max_length=200)
     month = models.PositiveIntegerField(null=True, blank=True)
     year = models.PositiveIntegerField(null=True, blank=True)

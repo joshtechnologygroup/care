@@ -19,6 +19,7 @@ class Command(BaseCommand):
             ("apps/accounts/fixtures/user_type.csv", "accounts.UserType"),
             ("apps/accounts/fixtures/state_fixture.csv", "accounts.State"),
             ("apps/accounts/fixtures/districts_fixture.csv", "accounts.District"),
+            ("apps/facility/fixtures/staff_designation_fixture.csv", "facility.StaffDesignation",),
             ("apps/facility/fixtures/inventory_item_fixture.csv", "facility.InventoryItem",),
             ("apps/facility/fixtures/testing_lab_fixture.csv", "facility.TestingLab"),
             ("apps/facility/fixtures/bed_type.csv", "facility.RoomType"),

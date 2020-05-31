@@ -55,7 +55,7 @@ class FacilityViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.G
                         "facility_id", flat=True
                     )
                 )
-                filter_kwargs["facility_id__in"] = facility_ids
+                filter_kwargs["id__in"] = facility_ids
             elif self.request.user.user_type.name == commons_constants.PORTEA:
                 filter_kwargs["id__in"] = []
         return facility_models.Facility.objects.filter(**filter_kwargs)

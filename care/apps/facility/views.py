@@ -149,6 +149,11 @@ class FacilityInfrastructureViewSet(
 
     queryset = facility_models.FacilityInfrastructure.objects.all()
     serializer_class = facility_serializers.FacilityInfrastructureSerializer
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        rest_filters.OrderingFilter,
+    )
+    filterset_class = facility_filters.FacilityInfrastructureFilter
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -164,3 +169,21 @@ class InventoryItemViewSet(
     serializer_class = facility_serializers.InventoryItemSerializer
     pagination_class = None
     permission_classes = (permissions.IsAuthenticated,)
+
+
+class RoomTypeViewSet(
+    mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    queryset = facility_models.RoomType.objects.all()
+    serializer_class = facility_serializers.RoomTypeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = None
+
+
+class BedTypeViewSet(
+    mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    queryset = facility_models.BedType.objects.all()
+    serializer_class = facility_serializers.BedTypeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = None

@@ -12,9 +12,7 @@ def get_json_fixtures(fixtures):
         csv_file_name = fixture[0]
         model = fixture[1]
         csv_file_absolute_path = get_absolute_path(csv_file_name)
-        json_file_absolute_path = get_absolute_path(
-            csv_file_name.split(".")[0] + ".json"
-        )
+        json_file_absolute_path = get_absolute_path(csv_file_name.split(".")[0] + ".json")
 
         with open(csv_file_absolute_path) as csvFile:
             csvReader = csv.DictReader(csvFile)

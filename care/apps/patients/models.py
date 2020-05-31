@@ -51,7 +51,6 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     ]
 
     source = models.IntegerField(choices=SOURCE_CHOICES, default=constants.SOURCE_CHOICES.CA)
-    facility = models.ForeignKey(Facility, on_delete=models.SET_NULL, null=True)
     nearest_facility = models.ForeignKey(
         Facility, on_delete=models.SET_NULL, null=True, related_name="nearest_facility"
     )

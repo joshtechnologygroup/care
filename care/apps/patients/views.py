@@ -33,6 +33,7 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
         rest_filters.OrderingFilter,
     )
     filterset_class = patients_filters.PatientFilter
+    permission_classes = (rest_permissions.IsAuthenticated,)
     ordering_fields = (
         "name",
         "icmr_id",
@@ -98,6 +99,7 @@ class PatientTimeLineViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericVi
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = patients_filters.PatientTimelineFilter
     pagination_class = commons_pagination.CustomPagination
+    permission_classes = (rest_permissions.IsAuthenticated,)
 
     def get_queryset(self):
         queryset = patient_models.PatientTimeLine.objects.filter(patient_id=self.kwargs.get("patient_id"))
@@ -121,6 +123,7 @@ class PortieCallingDetailViewSet(
     """
 
     serializer_class = patient_serializers.PortieCallingDetailSerialzier
+    permission_classes = (rest_permissions.IsAuthenticated,)
 
     def get_queryset(self):
         queryset = patient_models.PortieCallingDetail.objects.all()
@@ -143,6 +146,7 @@ class PatientSampleTestViewSet(
 
     queryset = patient_models.PatientSampleTest.objects.all()
     serializer_class = patient_serializers.PatientSampleTestSerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
 
 
 class PatientTransferViewSet(

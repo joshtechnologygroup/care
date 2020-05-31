@@ -90,11 +90,7 @@ class PatientFacilityAdmin(admin.ModelAdmin):
         "patient",
         "facility",
     )
-    list_display = (
-        "patient",
-        "facility",
-        "patient_status"
-    )
+    list_display = ("patient", "facility", "patient_status")
     list_filter = ("patient_status",)
     search_fields = ("patient__name",)
 

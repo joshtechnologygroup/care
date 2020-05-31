@@ -75,6 +75,16 @@ class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer):
         fields = ("facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")
 
 
+class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = facility_models.FacilityInfrastructure
+        fields = (
+            "total_bed",
+            "occupied_bed",
+            "available_bed",
+        )
+
+
 class InventorySerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = facility_models.Inventory
@@ -112,6 +122,8 @@ class InventoryUpdateSerializer(InventorySerializer):
             "current_quantity",
         )
 
+        validators = ()
+
 
 class InventoryItemSerializer(rest_serializers.ModelSerializer):
     class Meta:
@@ -132,3 +144,12 @@ class BedTypeSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = facility_models.RoomType
         fields = ("id", "name", "description")
+
+
+class StaffDesignationSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = facility_models.StaffDesignation
+        fields = (
+            "id",
+            "name",
+        )

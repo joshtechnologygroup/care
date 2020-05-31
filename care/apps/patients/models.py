@@ -61,7 +61,9 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     year = models.PositiveIntegerField(null=True, blank=True)
     gender = models.IntegerField(choices=commons_constants.GENDER_CHOICES, blank=False)
     phone_number = models.CharField(max_length=14, validators=[commons_validators.phone_number_regex])
-    phone_number_belongs_to = models.PositiveSmallIntegerField(default=1)
+    phone_number_belongs_to = models.IntegerField(
+        choices=constants.PATIENT_RELATIVE_CHOICES, default=constants.PATIENT_RELATIVE_TYPE_CHOICES.SELF
+    )
     date_of_birth = models.DateField(default=None, null=True)
     nationality = models.CharField(max_length=255, verbose_name="Nationality of Patient", default="indian")
     passport_no = models.CharField(
@@ -124,6 +126,10 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
         "PatientFacility", null=True, blank=True, on_delete=models.CASCADE, related_name="current_facility",
     )
     patient_status = models.CharField(max_length=25, choices=constants.PATIENT_STATUS_CHOICES, blank=True)
+    pincode = models.CharField(max_length=6, null=True, blank=True)
+    native_state = models.CharField(max_length=40, null=True, blank=True)
+    native_country = models.CharField(max_length=56, null=True, blank=True)
+
     history = HistoricalRecords()
 
     objects = commons_models.ActiveObjectsManager()

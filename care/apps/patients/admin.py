@@ -2,6 +2,7 @@ from django.contrib import admin
 from djangoql.admin import DjangoQLSearchMixin
 from apps.patients import models
 from import_export.admin import ImportExportModelAdmin
+from import_export import resources
 
 
 class PatientSymptomInline(admin.TabularInline):
@@ -16,7 +17,24 @@ class PatientDiseaseInline(admin.TabularInline):
     extra = 1
 
 
-class PatientAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
+class PatientResource(resources.ModelResource):
+
+    class Meta:
+        model = models.Patient
+        fields = (
+            'id', 'icmr_id', 'govt_id', 'name', 'active', 'address', 'district', 'state', 'pincode', 'source',
+            'nearest_facility', 'month', 'year', 'gender', 'phone_number', 'phone_number_belongs_to',
+            'date_of_birth', 'nationality', 'is_medical_worker', 'blood_group',
+            'contact_with_confirmed_carrier', 'contact_with_suspected_carrier', 'past_travel',
+            'countries_travelled_old', 'countries_travelled', 'present_health', 'ongoing_medication', 'has_SARI',
+            'number_of_aged_dependents', 'number_of_chronic_diseased_dependents', 'created_by', 'is_active',
+            'portea_able_to_connect', 'symptoms', 'diseases', 'covid_status', 'clinical_status', 'patient_status',
+            'created_at', 'updated_at'
+        )
+
+
+class PatientAdmin(DjangoQLSearchMixin, ImportExportModelAdmin):
+    resource_class = PatientResource
     list_display = ("id", "name", "gender")
     inlines = [
         PatientSymptomInline,

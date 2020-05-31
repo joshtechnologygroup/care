@@ -48,9 +48,9 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = patient_models.Patient.objects.all()
-        if self.request.user.user_type and self.request.user.user_type == commons_constants.PORTEA:
+        if self.request.user.user_type and self.request.user.user_type.name == commons_constants.PORTEA:
             queryset = queryset.filter(patient_status=patients_constants.HOME_ISOLATION)
-        elif self.request.user.user_type and self.request.user.user_type == commons_constants.FACILITY_MANAGER:
+        elif self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
             facility_ids = list(
                 facility_models.FacilityUser.objects.filter(user_id=self.request.user.id).values_list(
                     "facility_id", flat=True

@@ -157,6 +157,10 @@ class FacilityInfrastructureViewSet(
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
 
+    def update(self, request, *args, **kwargs):
+        self.serializer_class = facility_serializers.FacilityInfrastructureUpdateSerializer
+        return super(FacilityInfrastructureViewSet, self).update(request, *args, **kwargs)
+
 
 class InventoryItemViewSet(
     mixins.ListModelMixin, viewsets.GenericViewSet,

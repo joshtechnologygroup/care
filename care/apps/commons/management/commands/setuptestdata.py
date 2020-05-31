@@ -17,14 +17,14 @@ class Command(BaseCommand):
             ("apps/accounts/fixtures/users_fixture_test.csv", "accounts.User"),
             ("apps/facility/fixtures/facility_user_test.csv", "facility.FacilityUser"),
             ("apps/patients/fixtures/patients_fixture_test.csv", "patients.Patient"),
-            ("apps/patients/fixtures/patients_facilities_test.csv", "patients.PatientFacility")
+            ("apps/patients/fixtures/patients_facilities_test.csv", "patients.PatientFacility"),
+            ("apps/accounts/fixtures/district_preference_test.csv", "accounts.UserDistrictPreference")
         ]
 
         """
         handling unique togetherness of PatientFacility
         """
-        apps.get_model("facility.FacilityUser").objects.hard_delete()
-        apps.get_model("accounts.User").objects.hard_delete()
+        apps.get_model("patients.UserDistrictPreference").objects.hard_delete()
         apps.get_model("patients.PatientFacility").objects.hard_delete()
 
         json_fixtures_path, json_fixtures_name = commons_utils.get_json_fixtures(fixtures)

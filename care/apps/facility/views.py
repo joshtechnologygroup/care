@@ -14,6 +14,28 @@ from apps.facility import (
 )
 
 
+class FacilityDependentFilterQuerysetMixin:
+    """
+    Mixin to filter facility related queryset based on user-type
+    """
+    queryset = NotImplemented
+    request = NotImplemented
+    
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.request.user.user_type:
+            if self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
+                facility_ids = list(
+                    facility_models.FacilityUser.objects.filter(user_id=self.request.user.id).values_list(
+                        "facility_id", flat=True
+                    )
+                )
+                queryset = queryset.filter(facility_id__in=facility_ids)
+            elif self.request.user.user_type.name == commons_constants.PORTEA:
+                queryset =  queryset.none()
+        return queryset
+
+
 class FacilityViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     ViewSet for Facility list and create
@@ -78,14 +100,14 @@ class FacilityUserViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, vie
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
+        
         queryset = facility_models.FacilityUser.objects.all()
-        filter_kwargs = {}
         if self.request.user.user_type:
             if self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
-                filter_kwargs["user"] = self.request.user
+                queryset = queryset.filter(user=self.request.user)
             elif self.request.user.user_type.name == commons_constants.PORTEA:
                 return facility_models.FacilityUser.objects.none()
-        return queryset.filter(**filter_kwargs)
+        return queryset
 
 
 class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -99,13 +121,13 @@ class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class InventoryViewSet(
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
+    FacilityDependentFilterQuerysetMixin,
+    mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
     """
     ViewSet for Inventory add, list and update
     """
 
-    queryset = facility_models.Inventory.objects.all()
     filter_backends = (filters.DjangoFilterBackend, rest_filters.OrderingFilter)
     ordering_fields = (
         "facility__name",
@@ -118,6 +140,7 @@ class InventoryViewSet(
     serializer_class = facility_serializers.InventorySerializer
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = facility_models.Inventory.objects.all()
 
     def get_serializer_class(self):
         return (
@@ -128,26 +151,27 @@ class InventoryViewSet(
 
 
 class FacilityStaffViewSet(
+    FacilityDependentFilterQuerysetMixin,
     mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
 ):
     """
     ViewSet for facility staff add, list and update
     """
 
-    queryset = facility_models.FacilityStaff.objects.all()
     serializer_class = facility_serializers.FacilityStaffSerializer
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = facility_models.FacilityStaff.objects.all()
 
 
 class FacilityInfrastructureViewSet(
+    FacilityDependentFilterQuerysetMixin,
     mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
 ):
     """
     ViewSet for facility infrastructure add, list and update
     """
 
-    queryset = facility_models.FacilityInfrastructure.objects.all()
     serializer_class = facility_serializers.FacilityInfrastructureSerializer
     filter_backends = (
         filters.DjangoFilterBackend,
@@ -156,6 +180,7 @@ class FacilityInfrastructureViewSet(
     filterset_class = facility_filters.FacilityInfrastructureFilter
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = facility_models.FacilityInfrastructure.objects.all()
 
     def update(self, request, *args, **kwargs):
         self.serializer_class = facility_serializers.FacilityInfrastructureUpdateSerializer

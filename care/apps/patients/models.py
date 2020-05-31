@@ -126,7 +126,7 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
         "PatientFacility", null=True, blank=True, on_delete=models.CASCADE, related_name="current_facility",
     )
     patient_status = models.CharField(max_length=25, choices=constants.PATIENT_STATUS_CHOICES, blank=True)
-    pincode = models.CharField(max_length=10, null=True, blank=True)
+    pincode = models.CharField(max_length=6, null=True, blank=True)
     native_state = models.CharField(max_length=40, null=True, blank=True)
     native_country = models.CharField(max_length=56, null=True, blank=True)
 

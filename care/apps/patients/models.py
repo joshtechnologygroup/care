@@ -51,17 +51,16 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
     ]
 
     source = models.IntegerField(choices=SOURCE_CHOICES, default=constants.SOURCE_CHOICES.CA)
-    facility = models.ForeignKey(Facility, on_delete=models.SET_NULL, null=True)
     nearest_facility = models.ForeignKey(
         Facility, on_delete=models.SET_NULL, null=True, related_name="nearest_facility"
     )
-    icmr_id = models.CharField(max_length=15, blank=True)
-    govt_id = models.CharField(max_length=15, blank=True)
+    icmr_id = models.CharField(max_length=15, blank=True, null=True, unique=True)
+    govt_id = models.CharField(max_length=15, blank=True, null=True, unique=True)
     name = models.CharField(max_length=200)
     month = models.PositiveIntegerField(null=True, blank=True)
     year = models.PositiveIntegerField(null=True, blank=True)
     gender = models.IntegerField(choices=commons_constants.GENDER_CHOICES, blank=False)
-    phone_number = EncryptedCharField(max_length=14, validators=[commons_validators.phone_number_regex])
+    phone_number = models.CharField(max_length=14, validators=[commons_validators.phone_number_regex])
     phone_number_belongs_to = models.PositiveSmallIntegerField(default=1)
     date_of_birth = models.DateField(default=None, null=True)
     nationality = models.CharField(max_length=255, verbose_name="Nationality of Patient", default="indian")

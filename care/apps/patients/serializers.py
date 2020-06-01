@@ -206,10 +206,8 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
     month = rest_serializers.CharField(source="from_patient_facility.patient.month")
     year = rest_serializers.CharField(source="from_patient_facility.patient.year")
     phone_number = rest_serializers.CharField(source="from_patient_facility.patient.phone_number")
-    from_facility_id = rest_serializers.CharField(source="from_patient_facility.facility.facility_code")
-    from_facility_name = rest_serializers.CharField(source="from_patient_facility.facility.name")
-    to_facility_id = rest_serializers.CharField(source="to_facility.facility_code")
-    to_facility_name = rest_serializers.CharField(source="to_facility.name")
+    from_facility = rest_serializers.CharField(source="from_patient_facility.facility.name")
+    to_facility = rest_serializers.CharField(source="to_facility.name")
     requested_at = rest_serializers.DateTimeField(source="created_at", format="%m/%d/%Y %I:%M %p")
     status_updated_at = rest_serializers.DateTimeField(format="%m/%d/%Y %I:%M %p")
 
@@ -223,10 +221,8 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
             "month",
             "year",
             "phone_number",
-            "from_facility_id",
-            "from_facility_name",
-            "to_facility_name",
-            "to_facility_id",
+            "from_facility",
+            "to_facility",
             "requested_at",
             "status",
             "status_updated_at",

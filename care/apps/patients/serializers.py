@@ -226,6 +226,8 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
             "requested_at",
             "status",
             "status_updated_at",
+            "id",
+            "comments",
         )
 
 
@@ -233,6 +235,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for updating status related details about Patient transfer
     """
+    status_updated_at = rest_serializers.DateTimeField(format="%m/%d/%Y %I:%M %p")
 
     class Meta:
         model = patient_models.PatientTransfer
@@ -240,6 +243,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
             "status",
             "status_updated_at",
             "comments",
+            "id",
         )
 
     def validate_status(self, status):
@@ -285,8 +289,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         return status
 
     def update(self, instance, validated_data):
-        if validated_data.get("status") != instance.status:
-            validated_data["status_updated_at"] = datetime.now()
+        validated_data["status_updated_at"] = datetime.now()
         return super().update(instance, validated_data)
 
 
@@ -372,6 +375,12 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
 
 
 class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
+    id = rest_serializers.IntegerField(source="facility.id")
+    name = rest_serializers.CharField(source="facility.name")
+    district = rest_serializers.IntegerField(source="facility.district_id")
+    facility_type = rest_serializers.IntegerField(source="facility.facility_type_id")
+    owned_by = rest_serializers.IntegerField(source="facility.owned_by_id")
+
     class Meta:
         model = facility_models.Facility
         fields = ("id", "name", "district", "facility_type", "owned_by")
@@ -443,7 +452,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
 
     def get_facility_details(self, instance):
         return PatientFacilityDetailsSerializer(
-            facility_models.Facility.objects.filter(id=instance.facility.id), many=True
+            instance.patientfacility_set.all(), many=True
         ).data
 
     def get_patient_timeline(self, instance):

@@ -443,7 +443,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         return ContactDetailsSerializer(instance).data
 
     def get_medication_details(self, instance):
-        return MedicationDetailsSerializer(patient_models.Patient.objects.filter(id=instance.id), many=True).data
+        return MedicationDetailsSerializer([instance], many=True).data
 
     def get_facility_details(self, instance):
         return PatientFacilityDetailsSerializer(
@@ -459,7 +459,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         return PatientLabSerializer(patient_models.PatientSampleTest.objects.filter(patient=instance), many=True).data
 
     def get_personal_details(self, instance):
-        return PersonalDetailsSerializer(patient_models.Patient.objects.filter(id=instance.id), many=True).data
+        return PersonalDetailsSerializer([instance], many=True).data
 
     class Meta:
         model = None

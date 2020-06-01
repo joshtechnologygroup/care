@@ -376,6 +376,12 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
 
 
 class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
+    id = rest_serializers.IntegerField(source="facility.id")
+    name = rest_serializers.CharField(source="facility.name")
+    district = rest_serializers.IntegerField(source="facility.district_id")
+    facility_type = rest_serializers.IntegerField(source="facility.facility_type_id")
+    owned_by = rest_serializers.IntegerField(source="facility.owned_by_id")
+
     class Meta:
         model = facility_models.Facility
         fields = ("id", "name", "district", "facility_type", "owned_by")
@@ -447,7 +453,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
 
     def get_facility_details(self, instance):
         return PatientFacilityDetailsSerializer(
-            facility_models.Facility.objects.filter(id=instance.facility.id), many=True
+            instance.patientfacility_set.all(), many=True
         ).data
 
     def get_patient_timeline(self, instance):

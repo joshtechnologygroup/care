@@ -48,6 +48,10 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = patient_models.Patient.objects.all()
+        if self.action == 'retrieve':
+            # TODO Implement permission logic
+            return queryset
+
         if self.request.user.user_type and self.request.user.user_type.name == commons_constants.PORTEA:
             queryset = queryset.filter(patient_status=patients_constants.HOME_ISOLATION)
         elif self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:

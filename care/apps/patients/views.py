@@ -33,6 +33,7 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
         rest_filters.OrderingFilter,
     )
     filterset_class = patients_filters.PatientFilter
+    permission_classes = (rest_permissions.IsAuthenticated,)
     ordering_fields = (
         "name",
         "icmr_id",
@@ -47,9 +48,9 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = patient_models.Patient.objects.all()
-        if self.request.user.user_type and self.request.user.user_type == commons_constants.PORTEA:
+        if self.request.user.user_type and self.request.user.user_type.name == commons_constants.PORTEA:
             queryset = queryset.filter(patient_status=patients_constants.HOME_ISOLATION)
-        elif self.request.user.user_type and self.request.user.user_type == commons_constants.FACILITY_MANAGER:
+        elif self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
             facility_ids = list(
                 facility_models.FacilityUser.objects.filter(user_id=self.request.user.id).values_list(
                     "facility_id", flat=True
@@ -98,12 +99,13 @@ class PatientTimeLineViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericVi
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = patients_filters.PatientTimelineFilter
     pagination_class = commons_pagination.CustomPagination
+    permission_classes = (rest_permissions.IsAuthenticated,)
 
     def get_queryset(self):
         queryset = patient_models.PatientTimeLine.objects.filter(patient_id=self.kwargs.get("patient_id"))
-        if self.request.user.user_type and self.request.user.user_type == commons_constants.PORTEA:
+        if self.request.user.user_type and self.request.user.user_type.name == commons_constants.PORTEA:
             queryset = queryset.filter(patient__patient_status=patients_constants.HOME_ISOLATION)
-        elif self.request.user.user_type and self.request.user.user_type == commons_constants.FACILITY_MANAGER:
+        elif self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
             facility_ids = list(
                 facility_models.FacilityUser.objects.filter(user_id=self.request.user.id).values_list(
                     "facility_id", flat=True
@@ -121,10 +123,11 @@ class PortieCallingDetailViewSet(
     """
 
     serializer_class = patient_serializers.PortieCallingDetailSerialzier
+    permission_classes = (rest_permissions.IsAuthenticated,)
 
     def get_queryset(self):
         queryset = patient_models.PortieCallingDetail.objects.all()
-        if self.request.user.user_type and self.request.user.user_type == commons_constants.FACILITY_MANAGER:
+        if self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
             facility_ids = list(
                 facility_models.FacilityUser.objects.filter(user_id=self.request.user.id).values_list(
                     "facility_id", flat=True
@@ -143,6 +146,7 @@ class PatientSampleTestViewSet(
 
     queryset = patient_models.PatientSampleTest.objects.all()
     serializer_class = patient_serializers.PatientSampleTestSerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
 
 
 class PatientTransferViewSet(
@@ -166,21 +170,32 @@ class PatientTransferViewSet(
     search_fields = (
         "^from_patient_facility__patient__icmr_id",
         "^from_patient_facility__patient__govt_id",
-        "^from_patient_facility__facility__name",
-        "^to_facility__name",
+        "^from_patient_facility__patient__name",
+        "^from_patient_facility__patient__phone_number",
+        "^from_patient_facility__facility__facility_code",
+        "^to_facility__facility_code",
     )
     ordering_fields = (
         "icmr_id",
         "govt_id",
+        "patient_name",
+        "month",
+        "year",
+        "phone_number",
+        "requested_at",
+        "status_updated_at",
+        "from_facility_id",
+        "to_facility_id",
     )
     related_ordering_fields_map = {
         "icmr_id": "from_patient_facility__patient__icmr_id",
         "govt_id": "from_patient_facility__patient__govt_id",
         "patient_name": "from_patient_facility__patient__name",
-        "gender": "from_patient_facility__patient__gender",
         "month": "from_patient_facility__patient__month",
         "year": "from_patient_facility__patient__year",
         "phone_number": "from_patient_facility__patient__phone_number",
+        "from_facility_id": "from_patient_facility__facility_id",
+        "requested_at": "created_at"
     }
 
     def get_serializer_class(self):

@@ -3,6 +3,7 @@ from datetime import datetime
 from django.utils.translation import ugettext as _
 from rest_framework import serializers as rest_serializers
 from rest_framework import exceptions as rest_exceptions
+from apps.commons import constants as commons_constants
 from apps.patients import (
     constants as patient_constants,
     models as patient_models,
@@ -22,6 +23,9 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
 
 
 class GenderField(rest_serializers.RelatedField):
+    def to_internal_value(self, data):
+        return data
+
     def to_representation(self, value):
         if value == 1:
             return "Male"
@@ -64,6 +68,9 @@ class PatientListSerializer(rest_serializers.ModelSerializer):
             "facility_district",
             "facility_type",
             "ownership_type",
+            "native_state",
+            "native_country",
+            "pincode",
         )
         extra_kwargs = {
             "facility": {"required": True},
@@ -238,6 +245,48 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
             "status_updated_at",
             "comments",
         )
+
+    def validate_status(self, status):
+        if status == self.instance.status:
+            return status
+
+        final_statuses = [
+            patient_constants.TRANSFER_STATUS.REJECTED,
+            patient_constants.TRANSFER_STATUS.ACCEPTED,
+        ]
+        initial_status = [
+            patient_constants.TRANSFER_STATUS.PENDING,
+            patient_constants.TRANSFER_STATUS.WITHDRAW,
+        ]
+
+        if self.instance.status in final_statuses and status not in final_statuses:
+            raise rest_serializers.ValidationError(_(f"{self.instance.status} status can not be converted into {status}"))
+    
+        """
+        1. From facility user can only move from pending to withdraw OR withdraw to pending
+        2. To Facility member can do anything except pending to withdraw and withdraw to pending
+        """
+        current_user = self.context['request'].user
+        if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
+            # When user does not belongs to from and to facility then he can not update anything
+            if not current_user.facilityuser_set.filter(
+                facility_id__in=[self.instance.to_facility.id, self.instance.from_facility.facility.id]
+            ).exists():
+                raise rest_serializers.ValidationError(
+                    _("You do not have permission to update this transfer status")
+                )
+            # When user does not belongs to to-facility then he can not update final status
+            elif not current_user.facilityuser_set.filter(facility=self.instance.to_facility).exists():
+                if self.instance.status in final_statuses or status in final_statuses:
+                    raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
+            # When user does not belongs to from-facility then he move from one initial status to other initial status
+            elif not current_user.facilityuser_set.filter(facility=self.instance.from_facility.facility).exists():
+                if self.instance.status in initial_status and status in initial_status:
+                    raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
+        elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
+            raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
+
+        return status
 
     def update(self, instance, validated_data):
         if validated_data.get("status") != instance.status:

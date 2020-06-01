@@ -1,5 +1,7 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
+from django_filters import fields as filter_fields
+from django import forms
 
 from apps.commons import constants as common_constants
 from apps.patients import models as patients_models, constants as patient_constants
@@ -83,14 +85,28 @@ class PatientFilter(filters.FilterSet):
         )
 
 
+class CustomDateTimeRangeField(filter_fields.RangeField):
+
+    def __init__(self, *args, **kwargs):
+        fields = (
+            forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"]),
+            forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"]),
+        )
+        super().__init__(fields, *args, **kwargs)
+
+
+class CustomDateTimeFromToRangeFilter(filters.RangeFilter):
+    field_class = CustomDateTimeRangeField
+
+
 class PatientTransferFilter(filters.FilterSet):
     gender = filters.ChoiceFilter(
         field_name="from_patient_facility__patient__gender", choices=common_constants.GENDER_CHOICES,
     )
-    years = filters.CharFilter(field_name="from_patient_facility__patient__year")
-    months = filters.CharFilter(field_name="from_patient_facility__patient__month")
-    from_facility = filters.CharFilter(field_name="from_patient_facility_id")
-    to_facility = filters.CharFilter(field_name="to_facility_id")
+    year = filters.RangeFilter(field_name="from_patient_facility__patient__year", lookup_expr="range")
+    month = filters.RangeFilter(field_name="from_patient_facility__patient__month", lookup_expr="range")
+    from_facility = filters.CharFilter(field_name="from_patient_facility__name", lookup_expr="istartswith")
+    to_facility = filters.CharFilter(field_name="to_facility__name", lookup_expr="istartswith")
     requested_at = filters.DateTimeFromToRangeFilter(field_name="created_at")
     status_updated_at = filters.DateTimeFromToRangeFilter(field_name="status_updated_at")
     status = filters.ChoiceFilter(field_name="status", choices=patient_constants.TRANSFER_STATUS_CHOICES)
@@ -99,8 +115,8 @@ class PatientTransferFilter(filters.FilterSet):
         model = patients_models.PatientTransfer
         fields = (
             "gender",
-            "years",
-            "months",
+            "year",
+            "month",
             "from_facility",
             "to_facility",
             "requested_at",

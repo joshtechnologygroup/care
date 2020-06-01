@@ -79,6 +79,7 @@ class TestingLabAdmin(DjangoQLSearchMixin, ImportExportModelAdmin):
 
 admin.site.register(facility_models.Facility, FacilityAdmin)
 admin.site.register(facility_models.FacilityInfrastructure)
+admin.site.register(facility_models.StaffDesignation, ImportExportModelAdmin)
 admin.site.register(facility_models.FacilityStaff, FacilityStaffAdmin)
 admin.site.register(facility_models.InventoryItem, InventoryItemAdmin)
 admin.site.register(facility_models.Inventory, InventoryAdmin)

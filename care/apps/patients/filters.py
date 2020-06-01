@@ -1,5 +1,7 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
+from django_filters import fields as filter_fields
+from django import forms
 
 from apps.commons import constants as common_constants
 from apps.patients import models as patients_models, constants as patient_constants
@@ -81,6 +83,20 @@ class PatientFilter(filters.FilterSet):
             "facility_type",
             "facility_owned_by",
         )
+
+
+class CustomDateTimeRangeField(filter_fields.RangeField):
+
+    def __init__(self, *args, **kwargs):
+        fields = (
+            forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"]),
+            forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"]),
+        )
+        super().__init__(fields, *args, **kwargs)
+
+
+class CustomDateTimeFromToRangeFilter(filters.RangeFilter):
+    field_class = CustomDateTimeRangeField
 
 
 class PatientTransferFilter(filters.FilterSet):

@@ -170,21 +170,32 @@ class PatientTransferViewSet(
     search_fields = (
         "^from_patient_facility__patient__icmr_id",
         "^from_patient_facility__patient__govt_id",
-        "^from_patient_facility__facility__name",
-        "^to_facility__name",
+        "^from_patient_facility__patient__name",
+        "^from_patient_facility__patient__phone_number",
+        "^from_patient_facility__facility__facility_code",
+        "^to_facility__facility_code",
     )
     ordering_fields = (
         "icmr_id",
         "govt_id",
+        "patient_name",
+        "month",
+        "year",
+        "phone_number",
+        "requested_at",
+        "status_updated_at",
+        "from_facility_id",
+        "to_facility_id",
     )
     related_ordering_fields_map = {
         "icmr_id": "from_patient_facility__patient__icmr_id",
         "govt_id": "from_patient_facility__patient__govt_id",
         "patient_name": "from_patient_facility__patient__name",
-        "gender": "from_patient_facility__patient__gender",
         "month": "from_patient_facility__patient__month",
         "year": "from_patient_facility__patient__year",
         "phone_number": "from_patient_facility__patient__phone_number",
+        "from_facility_id": "from_patient_facility__facility_id",
+        "requested_at": "created_at"
     }
 
     def get_serializer_class(self):

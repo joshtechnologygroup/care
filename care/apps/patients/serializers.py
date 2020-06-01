@@ -71,12 +71,6 @@ class PatientListSerializer(rest_serializers.ModelSerializer):
             "native_country",
             "pincode",
         )
-        extra_kwargs = {
-            "facility": {"required": True},
-            "nearest_facility": {"required": True},
-            "state": {"required": True},
-            "district": {"required": True},
-        }
         read_only_fields = (
             "symptoms",
             "diseases",
@@ -403,9 +397,10 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         return MedicationDetailsSerializer(patient_models.Patient.objects.filter(id=instance.id), many=True).data
 
     def get_facility_details(self, instance):
-        return PatientFacilityDetailsSerializer(
-            facility_models.Facility.objects.filter(id=instance.facility.id), many=True
-        ).data
+        if instance.current_facility is not None:
+            return PatientFacilityDetailsSerializer(
+                facility_models.Facility.objects.filter(id=instance.facility.id), many=True
+            ).data
 
     def get_patient_timeline(self, instance):
         return PatientTimeLineSerializer(

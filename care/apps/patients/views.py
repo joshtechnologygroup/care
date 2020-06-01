@@ -37,7 +37,6 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
         "name",
         "icmr_id",
         "govt_id",
-        "facility",
         "year",
     )
 

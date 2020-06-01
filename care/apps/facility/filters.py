@@ -52,3 +52,15 @@ class FacilityInfrastructureFilter(filters.FilterSet):
             "occupied_bed",
             "available_bed",
         )
+
+
+class FacilityStaffFilter(filters.FilterSet):
+    facility = filters.ModelMultipleChoiceFilter(queryset=facility_models.Facility.objects.all())
+    name = filters.CharFilter()
+    phone_number = filters.CharFilter()
+    email = filters.CharFilter()
+    designation = filters.ModelMultipleChoiceFilter(queryset=facility_models.StaffDesignation.objects.all())
+
+    class Meta:
+        model = facility_models.FacilityStaff
+        fields = ("facility", "name", "phone_number", "email", "designation")

@@ -35,13 +35,16 @@ class GenderField(rest_serializers.RelatedField):
             return "Others"
 
 
-class PatientListSerializer(rest_serializers.ModelSerializer):
+class PatientSerializer(rest_serializers.ModelSerializer):
     patient_status = rest_serializers.SerializerMethodField()
     gender = GenderField(queryset=patient_models.Patient.objects.none())
     ownership_type = rest_serializers.CharField(read_only=True)
     facility_type = rest_serializers.CharField(read_only=True)
     facility_name = rest_serializers.CharField(read_only=True)
     facility_district = rest_serializers.CharField(read_only=True)
+    facility = rest_serializers.PrimaryKeyRelatedField(
+        queryset=facility_models.Facility.objects.all(), required=False, write_only=True
+    )
 
     class Meta:
         model = patient_models.Patient
@@ -71,6 +74,7 @@ class PatientListSerializer(rest_serializers.ModelSerializer):
             "native_state",
             "native_country",
             "pincode",
+            "facility",
         )
         read_only_fields = (
             "symptoms",
@@ -81,6 +85,20 @@ class PatientListSerializer(rest_serializers.ModelSerializer):
         if instance.patient_status == patient_constants.FACILITY_STATUS:
             return instance.facility_status
         return instance.patient_status
+
+    def create(self, validated_data):
+        facility = validated_data.pop('facility', None)
+        patient = super().create(validated_data)
+        if facility:
+            patient.patient_status = patient_constants.FACILITY_STATUS
+            patient_models.PatientFacility.objects.create(
+                patient=patient, facility=facility,
+                patient_status=patient_models.PatientStatus.objects.get(name='Admitted to Facility')
+            )
+        else:
+            patient.patient_status = patient_constants.HOME_ISOLATION
+        patient.save(update_fields=['patient_status'])
+        return patient
 
 
 class PatientGroupSerializer(rest_serializers.ModelSerializer):

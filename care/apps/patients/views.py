@@ -10,6 +10,8 @@ from rest_framework import (
     status as rest_status,
     viewsets as rest_viewsets,
 )
+from rest_framework.response import Response
+from rest_framework import status
 from apps.commons import (
     constants as commons_constants,
     filters as commons_filters,
@@ -26,7 +28,7 @@ from apps.facility import models as facility_models
 
 class PatientViewSet(rest_viewsets.ModelViewSet):
 
-    serializer_class = patient_serializers.PatientListSerializer
+    serializer_class = patient_serializers.PatientSerializer
     pagination_class = commons_pagination.CustomPagination
     filter_backends = (
         filters.DjangoFilterBackend,
@@ -93,6 +95,12 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
             facility_district=F("patientfacility__facility__district__name"),
         )
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return Response(patient_serializers.PatientDetailsSerializer(instance).data, status=status.HTTP_201_CREATED)
 
 
 class PatientGroupViewSet(rest_viewsets.ModelViewSet):

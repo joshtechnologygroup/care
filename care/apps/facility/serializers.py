@@ -37,6 +37,22 @@ class FacilitySerializer(rest_serializers.ModelSerializer):
         )
 
 
+class FacilityUserDetailSerializer(rest_serializers.ModelSerializer):
+    name = rest_serializers.CharField(source='user.name')
+    email = rest_serializers.CharField(source='user.email')
+    phone_number = rest_serializers.CharField(source='user.phone_number')
+
+    class Meta:
+        model = facility_models.FacilityUser
+        fields = (
+            "user",
+            "created_by",
+            'name',
+            'email',
+            'phone_number'
+        )
+
+
 class FacilityUserSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = facility_models.FacilityUser

@@ -52,6 +52,22 @@ class FacilitySerializer(rest_serializers.ModelSerializer):
         )
 
 
+class FacilityUserDetailSerializer(rest_serializers.ModelSerializer):
+    name = rest_serializers.CharField(source='user.name')
+    email = rest_serializers.CharField(source='user.email')
+    phone_number = rest_serializers.CharField(source='user.phone_number')
+
+    class Meta:
+        model = facility_models.FacilityUser
+        fields = (
+            "user",
+            "created_by",
+            'name',
+            'email',
+            'phone_number'
+        )
+
+
 class FacilityUserSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = facility_models.FacilityUser
@@ -98,7 +114,7 @@ class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
 class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
     class Meta:
         model = facility_models.FacilityInfrastructure
-        fields = ("facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")
+        fields = ("id", "facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")
 
 
 class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):

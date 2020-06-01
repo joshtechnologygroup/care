@@ -10,6 +10,8 @@ from rest_framework import (
     status as rest_status,
     viewsets as rest_viewsets,
 )
+from rest_framework.response import Response
+from rest_framework import status
 from apps.commons import (
     constants as commons_constants,
     filters as commons_filters,
@@ -26,7 +28,7 @@ from apps.facility import models as facility_models
 
 class PatientViewSet(rest_viewsets.ModelViewSet):
 
-    serializer_class = patient_serializers.PatientListSerializer
+    serializer_class = patient_serializers.PatientSerializer
     pagination_class = commons_pagination.CustomPagination
     filter_backends = (
         filters.DjangoFilterBackend,
@@ -46,6 +48,34 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
         self.serializer_class = patient_serializers.PatientDetailsSerializer
         return super().retrieve(request, *args, **kwargs)
 
+    def get_object(self):
+        """
+        Returns the object the view is displaying.
+
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = queryset.filter(**filter_kwargs).first()
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
     def get_queryset(self):
         queryset = patient_models.Patient.objects.all()
         if self.request.user.user_type and self.request.user.user_type.name == commons_constants.PORTEA:
@@ -57,13 +87,20 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
                 )
             )
             queryset = queryset.filter(patientfacility__facility_id__in=facility_ids)
-        return queryset.annotate(
+        queryset = queryset.annotate(
             facility_status=F("patientfacility__patient_status__name"),
             facility_name=F("patientfacility__facility__name"),
             facility_type=F("patientfacility__facility__facility_type__name"),
             ownership_type=F("patientfacility__facility__owned_by__name"),
             facility_district=F("patientfacility__facility__district__name"),
         )
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return Response(patient_serializers.PatientDetailsSerializer(instance).data, status=status.HTTP_201_CREATED)
 
 
 class PatientGroupViewSet(rest_viewsets.ModelViewSet):
@@ -170,21 +207,32 @@ class PatientTransferViewSet(
     search_fields = (
         "^from_patient_facility__patient__icmr_id",
         "^from_patient_facility__patient__govt_id",
-        "^from_patient_facility__facility__name",
-        "^to_facility__name",
+        "^from_patient_facility__patient__name",
+        "^from_patient_facility__patient__phone_number",
+        "^from_patient_facility__facility__facility_code",
+        "^to_facility__facility_code",
     )
     ordering_fields = (
         "icmr_id",
         "govt_id",
+        "patient_name",
+        "month",
+        "year",
+        "phone_number",
+        "requested_at",
+        "status_updated_at",
+        "from_facility_id",
+        "to_facility_id",
     )
     related_ordering_fields_map = {
         "icmr_id": "from_patient_facility__patient__icmr_id",
         "govt_id": "from_patient_facility__patient__govt_id",
         "patient_name": "from_patient_facility__patient__name",
-        "gender": "from_patient_facility__patient__gender",
         "month": "from_patient_facility__patient__month",
         "year": "from_patient_facility__patient__year",
         "phone_number": "from_patient_facility__patient__phone_number",
+        "from_facility_id": "from_patient_facility__facility_id",
+        "requested_at": "created_at"
     }
 
     def get_serializer_class(self):

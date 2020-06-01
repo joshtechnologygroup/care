@@ -48,10 +48,6 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = patient_models.Patient.objects.all()
-        if self.action == 'retrieve':
-            # TODO Implement permission logic
-            return queryset
-
         if self.request.user.user_type and self.request.user.user_type.name == commons_constants.PORTEA:
             queryset = queryset.filter(patient_status=patients_constants.HOME_ISOLATION)
         elif self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
@@ -61,13 +57,16 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
                 )
             )
             queryset = queryset.filter(patientfacility__facility_id__in=facility_ids)
-        return queryset.annotate(
+        queryset = queryset.annotate(
             facility_status=F("patientfacility__patient_status__name"),
             facility_name=F("patientfacility__facility__name"),
             facility_type=F("patientfacility__facility__facility_type__name"),
             ownership_type=F("patientfacility__facility__owned_by__name"),
             facility_district=F("patientfacility__facility__district__name"),
         )
+        if self.action == 'retrieve':
+            queryset = queryset[:1]
+        return queryset
 
 
 class PatientGroupViewSet(rest_viewsets.ModelViewSet):

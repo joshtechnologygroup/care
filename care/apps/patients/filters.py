@@ -103,20 +103,20 @@ class PatientTransferFilter(filters.FilterSet):
     gender = filters.ChoiceFilter(
         field_name="from_patient_facility__patient__gender", choices=common_constants.GENDER_CHOICES,
     )
-    years = filters.CharFilter(field_name="from_patient_facility__patient__year")
-    months = filters.CharFilter(field_name="from_patient_facility__patient__month")
-    from_facility = filters.CharFilter(field_name="from_patient_facility_id")
-    to_facility = filters.CharFilter(field_name="to_facility_id")
-    requested_at = CustomDateTimeFromToRangeFilter(field_name="created_at")
-    status_updated_at = CustomDateTimeFromToRangeFilter(field_name="status_updated_at")
+    year = filters.RangeFilter(field_name="from_patient_facility__patient__year", lookup_expr="range")
+    month = filters.RangeFilter(field_name="from_patient_facility__patient__month", lookup_expr="range")
+    from_facility = filters.CharFilter(field_name="from_patient_facility__name", lookup_expr="istartswith")
+    to_facility = filters.CharFilter(field_name="to_facility__name", lookup_expr="istartswith")
+    requested_at = filters.DateTimeFromToRangeFilter(field_name="created_at")
+    status_updated_at = filters.DateTimeFromToRangeFilter(field_name="status_updated_at")
     status = filters.ChoiceFilter(field_name="status", choices=patient_constants.TRANSFER_STATUS_CHOICES)
 
     class Meta:
         model = patients_models.PatientTransfer
         fields = (
             "gender",
-            "years",
-            "months",
+            "year",
+            "month",
             "from_facility",
             "to_facility",
             "requested_at",

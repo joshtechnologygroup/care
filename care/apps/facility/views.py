@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from apps.commons import (
     constants as commons_constants,
     pagination as commons_pagination,
+    permissions as commons_permissions
 )
 from apps.facility import (
     models as facility_models,
@@ -100,7 +101,7 @@ class FacilityUserViewSet(
     """
 
     serializer_class = facility_serializers.FacilityUserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, commons_permissions.FacilityAccessPermission)
     queryset = facility_models.FacilityUser.objects.all()
 
 
@@ -133,7 +134,7 @@ class InventoryViewSet(
     filterset_class = facility_filters.InventoryFilter
     serializer_class = facility_serializers.InventorySerializer
     pagination_class = commons_pagination.CustomPagination
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, commons_permissions.FacilityAccessPermission)
     queryset = facility_models.Inventory.objects.all()
 
     def get_serializer_class(self):
@@ -154,8 +155,12 @@ class FacilityStaffViewSet(
 
     serializer_class = facility_serializers.FacilityStaffSerializer
     pagination_class = commons_pagination.CustomPagination
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, commons_permissions.FacilityAccessPermission)
     queryset = facility_models.FacilityStaff.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        self.serializer_class = facility_serializers.FacilityStaffUpdateSerializer
+        return super().update(request, *args, **kwargs)
 
 
 class FacilityInfrastructureViewSet(
@@ -173,7 +178,7 @@ class FacilityInfrastructureViewSet(
     )
     filterset_class = facility_filters.FacilityInfrastructureFilter
     pagination_class = commons_pagination.CustomPagination
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, commons_permissions.FacilityAccessPermission)
     queryset = facility_models.FacilityInfrastructure.objects.all()
 
     def update(self, request, *args, **kwargs):

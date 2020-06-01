@@ -226,6 +226,8 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
             "requested_at",
             "status",
             "status_updated_at",
+            "id",
+            "comments",
         )
 
 
@@ -233,6 +235,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for updating status related details about Patient transfer
     """
+    status_updated_at = rest_serializers.DateTimeField(format="%m/%d/%Y %I:%M %p")
 
     class Meta:
         model = patient_models.PatientTransfer
@@ -240,6 +243,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
             "status",
             "status_updated_at",
             "comments",
+            "id",
         )
 
     def validate_status(self, status):
@@ -285,8 +289,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         return status
 
     def update(self, instance, validated_data):
-        if validated_data.get("status") != instance.status:
-            validated_data["status_updated_at"] = datetime.now()
+        validated_data["status_updated_at"] = datetime.now()
         return super().update(instance, validated_data)
 
 

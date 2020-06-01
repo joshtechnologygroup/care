@@ -72,12 +72,6 @@ class PatientListSerializer(rest_serializers.ModelSerializer):
             "native_country",
             "pincode",
         )
-        extra_kwargs = {
-            "facility": {"required": True},
-            "nearest_facility": {"required": True},
-            "state": {"required": True},
-            "district": {"required": True},
-        }
         read_only_fields = (
             "symptoms",
             "diseases",

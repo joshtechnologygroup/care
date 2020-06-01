@@ -18,9 +18,10 @@ class FacilityDependentFilterQuerysetMixin:
     """
     Mixin to filter facility related queryset based on user-type
     """
+
     queryset = NotImplemented
     request = NotImplemented
-    
+
     def get_queryset(self):
         queryset = self.queryset
         if self.request.user.user_type:
@@ -32,7 +33,7 @@ class FacilityDependentFilterQuerysetMixin:
                 )
                 queryset = queryset.filter(facility_id__in=facility_ids)
             elif self.request.user.user_type.name == commons_constants.PORTEA:
-                queryset =  queryset.none()
+                queryset = queryset.none()
         return queryset
 
 
@@ -100,7 +101,7 @@ class FacilityUserViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, vie
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        
+
         queryset = facility_models.FacilityUser.objects.all()
         if self.request.user.user_type:
             if self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:
@@ -122,7 +123,10 @@ class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class InventoryViewSet(
     FacilityDependentFilterQuerysetMixin,
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
 ):
     """
     ViewSet for Inventory add, list and update
@@ -152,7 +156,10 @@ class InventoryViewSet(
 
 class FacilityStaffViewSet(
     FacilityDependentFilterQuerysetMixin,
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
 ):
     """
     ViewSet for facility staff add, list and update
@@ -162,11 +169,19 @@ class FacilityStaffViewSet(
     pagination_class = commons_pagination.CustomPagination
     permission_classes = (permissions.IsAuthenticated,)
     queryset = facility_models.FacilityStaff.objects.all()
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        rest_filters.OrderingFilter,
+    )
+    filterset_class = facility_filters.FacilityStaffFilter
 
 
 class FacilityInfrastructureViewSet(
     FacilityDependentFilterQuerysetMixin,
-    mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
 ):
     """
     ViewSet for facility infrastructure add, list and update

@@ -2,7 +2,22 @@ from django.utils.translation import ugettext as _
 
 from rest_framework import serializers as rest_serializers
 
+from apps.commons import constants as commons_constants
 from apps.facility import models as facility_models
+
+
+class FacilityFieldValidationMixin:
+    context = NotImplemented
+
+    def validate_facility(self, facility):
+        current_user = self.context['request'].user
+        if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
+            if not current_user.facilityuser_set.filter(facility=facility).exists():
+                raise rest_serializers.ValidationError(
+                    _("You do not have permission to perform this action.")
+                )
+        return facility
+
 
 
 class FacilityShortSerializer(rest_serializers.ModelSerializer):
@@ -72,7 +87,7 @@ class FacilityTypeSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class FacilityStaffSerializer(rest_serializers.ModelSerializer):
+class FacilityStaffSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
     class Meta:
         model = facility_models.FacilityStaff
         fields = (
@@ -85,7 +100,18 @@ class FacilityStaffSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer):
+class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = facility_models.FacilityStaff
+        fields = (
+            "name",
+            "phone_number",
+            "email",
+            "designation",
+        )
+
+
+class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
     class Meta:
         model = facility_models.FacilityInfrastructure
         fields = ("id", "facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")
@@ -101,7 +127,7 @@ class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):
         )
 
 
-class InventorySerializer(rest_serializers.ModelSerializer):
+class InventorySerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
     class Meta:
         model = facility_models.Inventory
         fields = (

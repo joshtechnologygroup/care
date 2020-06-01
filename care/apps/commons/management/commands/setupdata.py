@@ -31,6 +31,8 @@ class Command(BaseCommand):
             ("apps/patients/fixtures/patient_group.csv", "patients.PatientGroup"),
             ("apps/patients/fixtures/clinical_status_fixture.csv", "patients.ClinicalStatus",),
             ("apps/patients/fixtures/covid_status_fixture.csv", "patients.CovidStatus"),
+            ("apps/patients/fixtures/covid_symptom_fixture.csv", "patients.CovidSymptom"),
+            ("apps/patients/fixtures/patient_disease_fixture.csv", "patients.Disease",),
         ]
 
         json_fixtures_path, json_fixtures_name = commons_utils.get_json_fixtures(fixtures)

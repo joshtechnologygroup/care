@@ -282,7 +282,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
             # When user does not belongs to from and to facility then he can not update anything
             if not current_user.facilityuser_set.filter(
-                facility_id__in=[self.instance.to_facility.id, self.instance.from_facility.facility.id]
+                facility_id__in=[self.instance.to_facility.id, self.instance.from_patient_facility.facility.id]
             ).exists():
                 raise rest_serializers.ValidationError(
                     _("You do not have permission to update this transfer status")
@@ -292,7 +292,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
                 if self.instance.status in final_statuses or status in final_statuses:
                     raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
             # When user does not belongs to from-facility then he move from one initial status to other initial status
-            elif not current_user.facilityuser_set.filter(facility=self.instance.from_facility.facility).exists():
+            elif not current_user.facilityuser_set.filter(facility=self.instance.from_patient_facility.facility).exists():
                 if self.instance.status in initial_status and status in initial_status:
                     raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
         elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:

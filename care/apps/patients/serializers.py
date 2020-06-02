@@ -395,8 +395,8 @@ class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
     owned_by = rest_serializers.IntegerField(source="facility.owned_by_id")
 
     class Meta:
-        model = facility_models.Facility
-        fields = ("id", "name", "district", "facility_type", "owned_by")
+        model = patient_models.PatientFacility
+        fields = ("id", "name", "district", "facility_type", "owned_by", "admitted_at", "discharged_at", "patient_status",)
 
 
 class PatientLabSerializer(rest_serializers.ModelSerializer):

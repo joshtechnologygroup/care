@@ -219,10 +219,8 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
     month = rest_serializers.CharField(source="from_patient_facility.patient.month")
     year = rest_serializers.CharField(source="from_patient_facility.patient.year")
     phone_number = rest_serializers.CharField(source="from_patient_facility.patient.phone_number")
-    from_facility_id = rest_serializers.CharField(source="from_patient_facility.facility.facility_code")
-    from_facility_name = rest_serializers.CharField(source="from_patient_facility.facility.name")
-    to_facility_id = rest_serializers.CharField(source="to_facility.facility_code")
-    to_facility_name = rest_serializers.CharField(source="to_facility.name")
+    from_facility = rest_serializers.CharField(source="from_patient_facility.facility.name")
+    to_facility = rest_serializers.CharField(source="to_facility.name")
     requested_at = rest_serializers.DateTimeField(source="created_at", format="%m/%d/%Y %I:%M %p")
     status_updated_at = rest_serializers.DateTimeField(format="%m/%d/%Y %I:%M %p")
 
@@ -236,13 +234,13 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
             "month",
             "year",
             "phone_number",
-            "from_facility_id",
-            "from_facility_name",
-            "to_facility_name",
-            "to_facility_id",
+            "from_facility",
+            "to_facility",
             "requested_at",
             "status",
             "status_updated_at",
+            "id",
+            "comments",
         )
 
 
@@ -250,6 +248,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for updating status related details about Patient transfer
     """
+    status_updated_at = rest_serializers.DateTimeField(format="%m/%d/%Y %I:%M %p")
 
     class Meta:
         model = patient_models.PatientTransfer
@@ -257,6 +256,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
             "status",
             "status_updated_at",
             "comments",
+            "id",
         )
 
     def validate_status(self, status):
@@ -273,10 +273,11 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         ]
 
         if self.instance.status in final_statuses and status not in final_statuses:
-            raise rest_serializers.ValidationError(
-                _(f"{self.instance.status} status can not be converted into {status}")
-            )
-
+            raise rest_serializers.ValidationError(_(f"""
+            {patient_constants.TRANSFER_STATUS_CHOICES[self.instance.status][1]} status can not be converted 
+            into {patient_constants.TRANSFER_STATUS_CHOICES[status][1]}
+            """))
+    
         """
         1. From facility user can only move from pending to withdraw OR withdraw to pending
         2. To Facility member can do anything except pending to withdraw and withdraw to pending
@@ -285,7 +286,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
             # When user does not belongs to from and to facility then he can not update anything
             if not current_user.facilityuser_set.filter(
-                facility_id__in=[self.instance.to_facility.id, self.instance.from_facility.facility.id]
+                facility_id__in=[self.instance.to_facility.id, self.instance.from_patient_facility.facility.id]
             ).exists():
                 raise rest_serializers.ValidationError(_("You do not have permission to update this transfer status"))
             # When user does not belongs to to-facility then he can not update final status
@@ -293,7 +294,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
                 if self.instance.status in final_statuses or status in final_statuses:
                     raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
             # When user does not belongs to from-facility then he move from one initial status to other initial status
-            elif not current_user.facilityuser_set.filter(facility=self.instance.from_facility.facility).exists():
+            elif not current_user.facilityuser_set.filter(facility=self.instance.from_patient_facility.facility).exists():
                 if self.instance.status in initial_status and status in initial_status:
                     raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
         elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
@@ -302,8 +303,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         return status
 
     def update(self, instance, validated_data):
-        if validated_data.get("status") != instance.status:
-            validated_data["status_updated_at"] = datetime.now()
+        validated_data["status_updated_at"] = datetime.now()
         return super().update(instance, validated_data)
 
 

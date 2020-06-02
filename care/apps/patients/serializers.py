@@ -272,7 +272,10 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         ]
 
         if self.instance.status in final_statuses and status not in final_statuses:
-            raise rest_serializers.ValidationError(_(f"{self.instance.status} status can not be converted into {status}"))
+            raise rest_serializers.ValidationError(_(f"""
+            {patient_constants.TRANSFER_STATUS_CHOICES[self.instance.status][1]} status can not be converted 
+            into {patient_constants.TRANSFER_STATUS_CHOICES[status][1]}
+            """))
     
         """
         1. From facility user can only move from pending to withdraw OR withdraw to pending

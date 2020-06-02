@@ -10,14 +10,11 @@ class FacilityFieldValidationMixin:
     context = NotImplemented
 
     def validate_facility(self, facility):
-        current_user = self.context['request'].user
+        current_user = self.context["request"].user
         if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
             if not current_user.facilityuser_set.filter(facility=facility).exists():
-                raise rest_serializers.ValidationError(
-                    _("You do not have permission to perform this action.")
-                )
+                raise rest_serializers.ValidationError(_("You do not have permission to perform this action."))
         return facility
-
 
 
 class FacilityShortSerializer(rest_serializers.ModelSerializer):
@@ -53,19 +50,13 @@ class FacilitySerializer(rest_serializers.ModelSerializer):
 
 
 class FacilityUserDetailSerializer(rest_serializers.ModelSerializer):
-    name = rest_serializers.CharField(source='user.name')
-    email = rest_serializers.CharField(source='user.email')
-    phone_number = rest_serializers.CharField(source='user.phone_number')
+    name = rest_serializers.CharField(source="user.name")
+    email = rest_serializers.CharField(source="user.email")
+    phone_number = rest_serializers.CharField(source="user.phone_number")
 
     class Meta:
         model = facility_models.FacilityUser
-        fields = (
-            "user",
-            "created_by",
-            'name',
-            'email',
-            'phone_number'
-        )
+        fields = ("user", "created_by", "name", "email", "phone_number")
 
 
 class FacilityUserSerializer(rest_serializers.ModelSerializer):
@@ -114,7 +105,16 @@ class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
 class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
     class Meta:
         model = facility_models.FacilityInfrastructure
-        fields = ("id", "facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")
+        fields = (
+            "id",
+            "facility",
+            "room_type",
+            "bed_type",
+            "total_bed",
+            "occupied_bed",
+            "available_bed",
+            "updated_at",
+        )
 
 
 class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):

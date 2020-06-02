@@ -19,7 +19,7 @@ class Command(BaseCommand):
             ("apps/patients/fixtures/patients_fixture_test.csv", "patients.Patient"),
             ("apps/patients/fixtures/patients_facilities_test.csv", "patients.PatientFacility"),
             ("apps/accounts/fixtures/district_preference_test.csv", "accounts.UserDistrictPreference"),
-            ("apps/patients/fixtures/patients_transfer_test.csv", "patients.PatientTransfer")
+            ("apps/patients/fixtures/patients_transfer_test.csv", "patients.PatientTransfer"),
         ]
 
         """

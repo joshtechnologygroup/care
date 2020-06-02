@@ -2,6 +2,7 @@ from rest_framework import permissions as rest_permissions
 
 from apps.commons import constants as commons_constants
 
+
 class AnonymousPermission(rest_permissions.BasePermission):
     """
     Don't Allows access to authenticated users.
@@ -17,7 +18,8 @@ class FacilityAccessPermission(rest_permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.user_type and request.user.user_type.name in [
-            commons_constants.FACILITY_MANAGER,
-            commons_constants.DISTRICT_MANAGER
-        ]
+        return (
+            request.user.is_authenticated
+            and request.user.user_type
+            and request.user.user_type.name in [commons_constants.FACILITY_MANAGER, commons_constants.DISTRICT_MANAGER]
+        )

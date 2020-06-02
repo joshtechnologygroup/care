@@ -86,7 +86,6 @@ class PatientFilter(filters.FilterSet):
 
 
 class CustomDateTimeRangeField(filter_fields.RangeField):
-
     def __init__(self, *args, **kwargs):
         fields = (
             forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"]),

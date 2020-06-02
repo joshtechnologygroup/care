@@ -4,6 +4,7 @@ from django_filters import fields as filter_fields
 from django import forms
 
 from apps.commons import constants as common_constants
+from apps.facility import models as facility_models
 from apps.patients import models as patients_models, constants as patient_constants
 from apps.accounts import models as accounts_models
 
@@ -100,16 +101,27 @@ class CustomDateTimeFromToRangeFilter(filters.RangeFilter):
 
 
 class PatientTransferFilter(filters.FilterSet):
-    gender = filters.ChoiceFilter(
+    icmr_id = filters.CharFilter(field_name="from_patient_facility__patient__icmr_id", lookup_expr="istartswith")
+    govt_id = filters.CharFilter(field_name="from_patient_facility__patient__govt_id", lookup_expr="istartswith")
+    patient_name = filters.CharFilter(field_name="from_patient_facility__patient__name", lookup_expr="istartswith")
+    gender = filters.MultipleChoiceFilter(
         field_name="from_patient_facility__patient__gender", choices=common_constants.GENDER_CHOICES,
     )
     year = filters.RangeFilter(field_name="from_patient_facility__patient__year", lookup_expr="range")
     month = filters.RangeFilter(field_name="from_patient_facility__patient__month", lookup_expr="range")
-    from_facility = filters.CharFilter(field_name="from_patient_facility__name", lookup_expr="istartswith")
-    to_facility = filters.CharFilter(field_name="to_facility__name", lookup_expr="istartswith")
-    requested_at = filters.DateTimeFromToRangeFilter(field_name="created_at")
-    status_updated_at = filters.DateTimeFromToRangeFilter(field_name="status_updated_at")
-    status = filters.ChoiceFilter(field_name="status", choices=patient_constants.TRANSFER_STATUS_CHOICES)
+    from_facility = filters.filters.ModelMultipleChoiceFilter(
+        field_name="from_patient_facility__facility", queryset=facility_models.Facility.objects.all()
+    )
+    to_facility = filters.filters.ModelMultipleChoiceFilter(
+        field_name="to_facility", queryset=facility_models.Facility.objects.all()
+    )
+    phone_number = filters.CharFilter(
+        field_name="from_patient_facility__patient__phone_number",
+        lookup_expr="istartswith"
+    )
+    requested_at = CustomDateTimeFromToRangeFilter(field_name="created_at")
+    status_updated_at = CustomDateTimeFromToRangeFilter(field_name="status_updated_at")
+    status = filters.MultipleChoiceFilter(field_name="status", choices=patient_constants.TRANSFER_STATUS_CHOICES)
 
     class Meta:
         model = patients_models.PatientTransfer
@@ -122,4 +134,8 @@ class PatientTransferFilter(filters.FilterSet):
             "requested_at",
             "status_updated_at",
             "status",
+            "icmr_id",
+            "govt_id",
+            "patient_name",
+            "phone_number",
         )

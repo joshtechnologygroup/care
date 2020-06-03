@@ -87,17 +87,18 @@ class PatientSerializer(rest_serializers.ModelSerializer):
         return instance.patient_status
 
     def create(self, validated_data):
-        facility = validated_data.pop('facility', None)
+        facility = validated_data.pop("facility", None)
         patient = super().create(validated_data)
         if facility:
             patient.patient_status = patient_constants.FACILITY_STATUS
             patient_models.PatientFacility.objects.create(
-                patient=patient, facility=facility,
-                patient_status=patient_models.PatientStatus.objects.get(name='Admitted to Facility')
+                patient=patient,
+                facility=facility,
+                patient_status=patient_models.PatientStatus.objects.get(name="Admitted to Facility"),
             )
         else:
             patient.patient_status = patient_constants.HOME_ISOLATION
-        patient.save(update_fields=['patient_status'])
+        patient.save(update_fields=["patient_status"])
         return patient
 
 
@@ -313,15 +314,13 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         1. From facility user can only move from pending to withdraw OR withdraw to pending
         2. To Facility member can do anything except pending to withdraw and withdraw to pending
         """
-        current_user = self.context['request'].user
+        current_user = self.context["request"].user
         if current_user.user_type and current_user.user_type.name == commons_constants.FACILITY_MANAGER:
             # When user does not belongs to from and to facility then he can not update anything
             if not current_user.facilityuser_set.filter(
                 facility_id__in=[self.instance.to_facility.id, self.instance.from_patient_facility.facility.id]
             ).exists():
-                raise rest_serializers.ValidationError(
-                    _("You do not have permission to update this transfer status")
-                )
+                raise rest_serializers.ValidationError(_("You do not have permission to update this transfer status"))
             # When user does not belongs to to-facility then he can not update final status
             elif not current_user.facilityuser_set.filter(facility=self.instance.to_facility).exists():
                 if self.instance.status in final_statuses or status in final_statuses:
@@ -429,8 +428,17 @@ class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
     owned_by = rest_serializers.IntegerField(source="facility.owned_by_id")
 
     class Meta:
-        model = facility_models.Facility
-        fields = ("id", "name", "district", "facility_type", "owned_by")
+        model = patient_models.PatientFacility
+        fields = (
+            "id",
+            "name",
+            "district",
+            "facility_type",
+            "owned_by",
+            "admitted_at",
+            "discharged_at",
+            "patient_status",
+        )
 
 
 class PatientLabSerializer(rest_serializers.ModelSerializer):
@@ -498,9 +506,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         return MedicationDetailsSerializer([instance], many=True).data
 
     def get_facility_details(self, instance):
-        return PatientFacilityDetailsSerializer(
-            instance.patientfacility_set.all(), many=True
-        ).data
+        return PatientFacilityDetailsSerializer(instance.patientfacility_set.all(), many=True).data
 
     def get_patient_timeline(self, instance):
         return PatientTimeLineSerializer(

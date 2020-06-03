@@ -41,6 +41,8 @@ class FacilitySerializer(rest_serializers.ModelSerializer):
             "address",
             "local_body",
             "district",
+            "city",
+            "pincode",
             "state",
             "phone_number",
             "corona_testing",
@@ -112,6 +114,11 @@ class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
 
 
 class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
+
+    def validate(self, attrs):
+        attrs['created_by'] = self.context['request'].user
+        return attrs
+
     class Meta:
         model = facility_models.FacilityInfrastructure
         fields = ("id", "facility", "room_type", "bed_type", "total_bed", "occupied_bed", "available_bed", "updated_at")

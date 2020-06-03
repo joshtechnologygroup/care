@@ -12,6 +12,10 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.commons import (
+    pagination as commons_pagination
+)
+
 from apps.accounts import (
     models as accounts_models,
     filters as accounts_filters,
@@ -44,6 +48,26 @@ class StateListViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet)
 
     queryset = accounts_models.State.objects.all()
     serializer_class = accounts_serializers.StateSerializer
+
+
+class CityListViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):
+    """
+    City list API view
+    """
+
+    queryset = accounts_models.City.objects.all()
+    serializer_class = accounts_serializers.CitySerializer
+    pagination_class = None
+
+
+class LocalBodyListViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):
+    """
+    LocalBody list API view
+    """
+
+    queryset = accounts_models.LocalBody.objects.all()
+    serializer_class = accounts_serializers.LocalBodySerializer
+    pagination_class = None
 
 
 class DistrictListViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):

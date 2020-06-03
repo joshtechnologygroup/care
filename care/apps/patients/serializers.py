@@ -243,6 +243,38 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
         )
 
 
+class PatientTransferCreateSerializer(rest_serializers.ModelSerializer):
+    """
+    Serializer for creating patient transfer
+    """
+    patient = rest_serializers.PrimaryKeyRelatedField(queryset=patient_models.Patient.objects.all())
+    from_facility = rest_serializers.PrimaryKeyRelatedField(queryset=facility_models.Facility.objects.all())
+
+    class Meta:
+        model = patient_models.PatientTransfer
+        fields = (
+            "status",
+            "comments",
+            "to_facility",
+            "patient",
+            "from_facility",
+        )
+
+    def validate(self, attrs):
+        patient = attrs.pop("patient")
+        from_facility = attrs.pop("from_facility")
+        patient_facility = patient_models.PatientFacility.objects.filter(
+            patient=patient, facility=from_facility
+        ).first()
+        if not patient_facility:
+            raise rest_serializers.ValidationError("This Patient currently does not exist in selected From facility")
+        attrs['from_patient_facility'] = patient_facility
+        return attrs
+
+    def create(self, validated_data):
+        return patient_models.PatientTransfer.objects.create(**validated_data)
+
+
 class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for updating status related details about Patient transfer

@@ -238,3 +238,16 @@ class PatientTransferViewSet(
         if self.action == "partial_update":
             return patient_serializers.PatientTransferUpdateSerializer
         return self.serializer_class
+
+
+class PatientFamilyViewSet(
+    rest_mixins.CreateModelMixin, rest_mixins.UpdateModelMixin, rest_viewsets.GenericViewSet,
+):
+    """
+    views for create and update patient family member
+    """
+
+    queryset = patient_models.PatientFamily.objects.all()
+    serializer_class = patient_serializers.PatientFamilySerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
+    pagination_class = None

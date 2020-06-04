@@ -86,10 +86,10 @@ class PatientSerializer(rest_serializers.ModelSerializer):
         return instance.patient_status
 
     def create(self, validated_data):
-        patient_facility = validated_data.pop('patient_facility', None)
+        patient_facility = validated_data.pop("patient_facility", None)
         patient = super().create(validated_data)
         if patient_facility:
-            patient_models.PatientFacility.objects.create(**patient_facility, patient=patient) 
+            patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
         return patient
 
 
@@ -142,8 +142,9 @@ class PatientTimeLineSerializer(rest_serializers.ModelSerializer):
 
 
 class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
-    portie_name = rest_serializers.CharField(source='user.name', read_only=True)
-    portie_phone_number = rest_serializers.CharField(source='user.phone_number', read_only=True)
+    portie_name = rest_serializers.CharField(source="user.name", read_only=True)
+    portie_phone_number = rest_serializers.CharField(source="user.phone_number", read_only=True)
+
     class Meta:
         model = patient_models.PortieCallingDetail
         fields = (
@@ -243,6 +244,7 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for updating status related details about Patient transfer
     """
+
     status_updated_at = rest_serializers.DateTimeField(format="%m/%d/%Y %I:%M %p")
 
     class Meta:
@@ -268,11 +270,15 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
         ]
 
         if self.instance.status in final_statuses and status not in final_statuses:
-            raise rest_serializers.ValidationError(_(f"""
+            raise rest_serializers.ValidationError(
+                _(
+                    f"""
             {patient_constants.TRANSFER_STATUS_CHOICES[self.instance.status][1]} status can not be converted 
             into {patient_constants.TRANSFER_STATUS_CHOICES[status][1]}
-            """))
-    
+            """
+                )
+            )
+
         """
         1. From facility user can only move from pending to withdraw OR withdraw to pending
         2. To Facility member can do anything except pending to withdraw and withdraw to pending
@@ -289,7 +295,9 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
                 if self.instance.status in final_statuses or status in final_statuses:
                     raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
             # When user does not belongs to from-facility then he move from one initial status to other initial status
-            elif not current_user.facilityuser_set.filter(facility=self.instance.from_patient_facility.facility).exists():
+            elif not current_user.facilityuser_set.filter(
+                facility=self.instance.from_patient_facility.facility
+            ).exists():
                 if self.instance.status in initial_status and status in initial_status:
                     raise rest_serializers.ValidationError(_("You do not have permission to change current status"))
         elif current_user.user_type and current_user.user_type.name == commons_constants.PORTEA:
@@ -305,7 +313,15 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
 class PatientFamilySerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.PatientFamily
-        fields = ("id","name", "relation", "age_year", "age_month", "gender", "phone_number",)
+        fields = (
+            "id",
+            "name",
+            "relation",
+            "age_year",
+            "age_month",
+            "gender",
+            "phone_number",
+        )
 
 
 class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):

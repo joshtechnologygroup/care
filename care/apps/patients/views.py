@@ -251,4 +251,3 @@ class PatientFamilyViewSet(
     serializer_class = patient_serializers.PatientFamilySerializer
     permission_classes = (rest_permissions.IsAuthenticated,)
     pagination_class = None
-

@@ -17,5 +17,6 @@ routers.register("inventory-items", facility_views.InventoryItemViewSet, basenam
 routers.register("room-type", facility_views.RoomTypeViewSet, basename="room_items")
 routers.register("bed-type", facility_views.BedTypeViewSet, basename="bed_items")
 routers.register("staff-designation", facility_views.StaffDesignationViewSet, basename="staff_designation")
+routers.register("testing-labs", facility_views.TestingLabViewSet, basename="testing_labs")
 
 urlpatterns = routers.urls

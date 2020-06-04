@@ -115,8 +115,7 @@ class PatientTransferFilter(filters.FilterSet):
         field_name="to_facility", queryset=facility_models.Facility.objects.all()
     )
     phone_number = filters.CharFilter(
-        field_name="from_patient_facility__patient__phone_number",
-        lookup_expr="istartswith"
+        field_name="from_patient_facility__patient__phone_number", lookup_expr="istartswith"
     )
     requested_at = CustomDateTimeFromToRangeFilter(field_name="created_at")
     status_updated_at = CustomDateTimeFromToRangeFilter(field_name="status_updated_at")

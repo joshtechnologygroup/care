@@ -245,3 +245,12 @@ class StaffDesignationViewSet(
     serializer_class = facility_serializers.StaffDesignationSerializer
     permission_classes = (permissions.IsAuthenticated,)
     pagination_class = None
+
+
+class TestingLabViewSet(
+    mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    queryset = facility_models.TestingLab.objects.all()
+    serializer_class = facility_serializers.TestingLabSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = None

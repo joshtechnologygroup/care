@@ -34,7 +34,7 @@ class GenderField(rest_serializers.RelatedField):
             return "Female"
         else:
             return "Others"
-            
+
 
 class PatientSerializer(rest_serializers.ModelSerializer):
     patient_facility = PatientFacilitySerializer(required=False, write_only=True)
@@ -94,13 +94,13 @@ class PatientSerializer(rest_serializers.ModelSerializer):
             patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
         if symptoms:
             patient_models.PatientSymptom.objects.bulk_create([
-            patient_models.PatientSymptom(symptom_id=symptom, patient=patient)
-            for symptom in symptoms
+                patient_models.PatientSymptom(symptom_id=symptom, patient=patient)
+                for symptom in symptoms
             ])
         if diseases:
             patient_models.PatientDisease.objects.bulk_create([
-            patient_models.PatientDisease(disease_id=disease, patient=patient)
-            for disease in diseases
+                patient_models.PatientDisease(disease_id=disease, patient=patient)
+                for disease in diseases
             ])
         return patient
 
@@ -352,7 +352,7 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
         return instance.patient.phone_number
 
     def get_patient_relation(self, instance):
-        return instance.relation if instance.relation else "Self"
+        return instance.relation
 
     def get_status(self, instance):
         return instance.able_to_connect

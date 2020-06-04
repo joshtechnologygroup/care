@@ -93,15 +93,13 @@ class PatientSerializer(rest_serializers.ModelSerializer):
         if patient_facility:
             patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
         if symptoms:
-            patient_models.PatientSymptom.objects.bulk_create([
-                patient_models.PatientSymptom(symptom_id=symptom, patient=patient)
-                for symptom in symptoms
-            ])
+            patient_models.PatientSymptom.objects.bulk_create(
+                [patient_models.PatientSymptom(symptom_id=symptom, patient=patient) for symptom in symptoms]
+            )
         if diseases:
-            patient_models.PatientDisease.objects.bulk_create([
-                patient_models.PatientDisease(disease_id=disease, patient=patient)
-                for disease in diseases
-            ])
+            patient_models.PatientDisease.objects.bulk_create(
+                [patient_models.PatientDisease(disease_id=disease, patient=patient) for disease in diseases]
+            )
         return patient
 
 

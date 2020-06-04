@@ -151,7 +151,6 @@ class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
             "id",
             "portie",
             "patient",
-            "patient_family",
             "called_at",
             "able_to_connect",
             "comments",
@@ -341,7 +340,7 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
         return instance.patient.phone_number
 
     def get_patient_relation(self, instance):
-        return instance.patient_family.relation if instance.patient_family else "Self"
+        return instance.relation if instance.relation else "Self"
 
     def get_status(self, instance):
         return instance.able_to_connect

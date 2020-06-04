@@ -86,6 +86,14 @@ class PatientFilter(filters.FilterSet):
         )
 
 
+class PatientShortFilter(filters.FilterSet):
+    name = filters.CharFilter(field_name="name", lookup_expr="istartswith")
+
+    class Meta:
+        model = patients_models.Patient
+        fields = ('name',)
+
+
 class CustomDateTimeRangeField(filter_fields.RangeField):
     def __init__(self, *args, **kwargs):
         fields = (

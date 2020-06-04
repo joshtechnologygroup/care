@@ -244,7 +244,8 @@ class PortieCallingDetail(commons_models.SoftDeleteTimeStampedModel):
 
     portie = models.ForeignKey(accounts_models.User, on_delete=models.CASCADE)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
-    patient_family = models.ForeignKey(PatientFamily, on_delete=models.CASCADE, null=True, blank=True)
+    patient_number = models.CharField(max_length=14, validators=[commons_validators.phone_number_regex])
+    relation = models.IntegerField(choices=constants.RELATIVE_CHOICES)
     called_at = models.DateTimeField()
     able_to_connect = models.BooleanField(default=True)
     comments = models.TextField(blank=True)

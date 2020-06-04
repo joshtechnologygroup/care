@@ -19,6 +19,9 @@ routers.register(
 routers.register(
     "patients-short", patients_views.PatientTransferShortFacilityViewSet, basename="patient_short",
 )
+    "family-members", patients_views.PatientFamilyViewSet, basename="family_member",
+)
+
 routers.register("", patients_views.PatientViewSet, basename="patient")
 
 urlpatterns = routers.urls

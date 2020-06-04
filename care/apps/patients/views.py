@@ -263,3 +263,16 @@ class PatientTransferShortFacilityViewSet(rest_mixins.ListModelMixin, rest_views
                 facility_id=from_facility
             ).values_list('patient', flat=True)
         ) if from_facility else patient_models.Patient.objects.all()
+
+
+class PatientFamilyViewSet(
+    rest_mixins.CreateModelMixin, rest_mixins.UpdateModelMixin, rest_viewsets.GenericViewSet,
+):
+    """
+    views for create and update patient family member
+    """
+
+    queryset = patient_models.PatientFamily.objects.all()
+    serializer_class = patient_serializers.PatientFamilySerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
+    pagination_class = None

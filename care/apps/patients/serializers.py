@@ -34,10 +34,12 @@ class GenderField(rest_serializers.RelatedField):
             return "Female"
         else:
             return "Others"
-
+            
 
 class PatientSerializer(rest_serializers.ModelSerializer):
     patient_facility = PatientFacilitySerializer(required=False, write_only=True)
+    symptoms = rest_serializers.ListField(required=False)
+    diseases = rest_serializers.ListField(required=False)
     patient_status = rest_serializers.SerializerMethodField()
     gender = GenderField(queryset=patient_models.Patient.objects.none())
     ownership_type = rest_serializers.CharField(read_only=True)
@@ -74,8 +76,6 @@ class PatientSerializer(rest_serializers.ModelSerializer):
             "native_country",
             "pincode",
             "patient_facility",
-        )
-        read_only_fields = (
             "symptoms",
             "diseases",
         )
@@ -87,9 +87,21 @@ class PatientSerializer(rest_serializers.ModelSerializer):
 
     def create(self, validated_data):
         patient_facility = validated_data.pop("patient_facility", None)
+        symptoms = validated_data.pop("symptoms", None)
+        diseases = validated_data.pop("diseases", None)
         patient = super().create(validated_data)
         if patient_facility:
             patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
+        if symptoms:
+            patient_models.PatientSymptom.objects.bulk_create([
+            patient_models.PatientSymptom(symptom_id=symptom, patient=patient)
+            for symptom in symptoms
+            ])
+        if diseases:
+            patient_models.PatientDisease.objects.bulk_create([
+            patient_models.PatientDisease(disease_id=disease, patient=patient)
+            for disease in diseases
+            ])
         return patient
 
 

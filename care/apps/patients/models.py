@@ -204,6 +204,8 @@ class PatientFacility(commons_models.SoftDeleteTimeStampedModel):
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
     patient_facility_id = models.CharField(max_length=15)
     patient_status = models.ForeignKey("PatientStatus", on_delete=models.CASCADE)
+    discharged_at = models.DateTimeField(null=True, blank=True)
+    admitted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.facility.name}"
@@ -257,12 +259,12 @@ class PatientSampleTest(commons_models.SoftDeleteTimeStampedModel):
     """
 
     SAMPLE_TEST_RESULT_CHOICES = [
-        (constants.SAMPLE_TEST_RESULT_MAP.SS, "SAMPLE SENT"),
-        (constants.SAMPLE_TEST_RESULT_MAP.PO, "POSITIVE"),
-        (constants.SAMPLE_TEST_RESULT_MAP.NG, "NEGATIVE"),
-        (constants.SAMPLE_TEST_RESULT_MAP.PP, "PRESUMPTIVE POSITIVE"),
-        (constants.SAMPLE_TEST_RESULT_MAP.AW, "AWAITING"),
-        (constants.SAMPLE_TEST_RESULT_MAP.TI, "TEST INCONCLUSIVE"),
+        (constants.SAMPLE_TEST_RESULT_MAP.SS, "Sample Sent"),
+        (constants.SAMPLE_TEST_RESULT_MAP.RP, "Report Pending"),
+        (constants.SAMPLE_TEST_RESULT_MAP.PO, "Positive"),
+        (constants.SAMPLE_TEST_RESULT_MAP.NG, "Negative"),
+        (constants.SAMPLE_TEST_RESULT_MAP.PP, "Presumptive Positive"),
+        (constants.SAMPLE_TEST_RESULT_MAP.TI, "Test Inconclusive"),
     ]
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT, related_name="patients")
     testing_lab = models.ForeignKey(TestingLab, on_delete=models.PROTECT, related_name="labs")

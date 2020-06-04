@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from apps.commons import (
     constants as commons_constants,
     pagination as commons_pagination,
-    permissions as commons_permissions
+    permissions as commons_permissions,
 )
 from apps.facility import (
     models as facility_models,
@@ -92,18 +92,16 @@ class FacilityViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.G
             ).data
         )
 
-    @action(methods=['GET', ], detail=True)
+    @action(methods=["GET",], detail=True)
     def managers(self, request, *args, **kwargs):
         facility = self.get_object()
         return Response(
-            facility_serializers.FacilityUserDetailSerializer(
-                facility.facilityuser_set.all(), many=True,
-            ).data
+            facility_serializers.FacilityUserDetailSerializer(facility.facilityuser_set.all(), many=True,).data
         )
 
+
 class FacilityUserViewSet(
-    FacilityDependentFilterQuerysetMixin,
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
+    FacilityDependentFilterQuerysetMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
 ):
     """
     ViewSet for FacilityUser add and remove
@@ -113,7 +111,7 @@ class FacilityUserViewSet(
     permission_classes = (permissions.IsAuthenticated, commons_permissions.FacilityAccessPermission)
     queryset = facility_models.FacilityUser.objects.all()
 
-    
+
 class FacilityTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     ViewSet for Faciity type list

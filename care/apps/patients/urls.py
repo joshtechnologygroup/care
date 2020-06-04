@@ -19,6 +19,7 @@ routers.register(
 routers.register(
     "patients-short", patients_views.PatientTransferShortFacilityViewSet, basename="patient_short",
 )
+routers.register(
     "family-members", patients_views.PatientFamilyViewSet, basename="family_member",
 )
 

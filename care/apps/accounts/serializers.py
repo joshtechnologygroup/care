@@ -80,7 +80,7 @@ class UserSerializer(ChangePasswordSerializer):
                     'district_id', flat=True
                 )
             ]
-            _ = accounts_models.UserDistrictPreference.objects.bulk_create([
+            accounts_models.UserDistrictPreference.objects.bulk_create([
                 accounts_models.UserDistrictPreference(user=instance, district=district) for district in preferred_districts
             ])
             accounts_models.UserDistrictPreference.objects.exclude(

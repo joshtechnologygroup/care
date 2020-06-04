@@ -298,12 +298,6 @@ class PatientTransfer(commons_models.SoftDeleteTimeStampedModel):
     )
     comments = models.TextField(null=True, blank=True, help_text="comments related to patient transfer request")
 
-    class Meta:
-        unique_together = (
-            "from_patient_facility",
-            "to_facility",
-        )
-
     def __str__(self):
         return f"""
             Patient: {self.from_patient_facility.patient.name} - From: {self.from_patient_facility.facility.name} 

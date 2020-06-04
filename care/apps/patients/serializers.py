@@ -281,9 +281,6 @@ class PatientTransferCreateSerializer(rest_serializers.ModelSerializer):
         attrs['status_updated_at'] = datetime.now()
         return attrs
 
-    def create(self, validated_data):
-        return patient_models.PatientTransfer.objects.create(**validated_data)
-
 
 class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
     """

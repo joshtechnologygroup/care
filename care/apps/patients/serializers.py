@@ -244,6 +244,13 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
         )
 
 
+class PatientShortSerializer(rest_serializers.ModelSerializer):
+
+    class Meta:
+        model = patient_models.Patient
+        fields = ("name", "id",)
+
+
 class PatientTransferCreateSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for creating patient transfer
@@ -269,7 +276,13 @@ class PatientTransferCreateSerializer(rest_serializers.ModelSerializer):
         ).first()
         if not patient_facility:
             raise rest_serializers.ValidationError("This Patient currently does not exist in selected From facility")
+        if patient_models.PatientTransfer.objects.filter(
+                from_patient_facility=patient_facility,
+                to_facility=attrs.get('to_facility')
+        ):
+            raise rest_serializers.ValidationError("This Patient transfer request has already been generated")
         attrs['from_patient_facility'] = patient_facility
+        attrs['status_updated_at'] = datetime.now()
         return attrs
 
     def create(self, validated_data):

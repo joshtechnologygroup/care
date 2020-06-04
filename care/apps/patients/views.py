@@ -247,3 +247,19 @@ class PatientTransferViewSet(
         self.perform_create(serializer)
         return Response({}, status=status.HTTP_200_OK)
 
+
+class PatientTransferShortFacilityViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):
+    http_method_names = ("get",)
+    filterset_class = patients_filters.PatientShortFilter
+    serializer_class = patient_serializers.PatientShortSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    pagination_class = commons_pagination.CustomPagination
+    permission_classes = (rest_permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        from_facility = self.request.GET.get('from_facility', None)
+        return patient_models.Patient.objects.filter(
+            id__in=patient_models.PatientFacility.objects.filter(
+                facility_id=from_facility
+            ).values_list('patient', flat=True)
+        ) if from_facility else patient_models.Patient.objects.all()

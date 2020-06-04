@@ -16,6 +16,10 @@ routers.register("sample-tests", patients_views.PatientSampleTestViewSet, basena
 routers.register(
     "patient-transfer", patients_views.PatientTransferViewSet, basename="patient_transfer",
 )
+routers.register(
+    "family-members", patients_views.PatientFamilyViewSet, basename="family_member",
+)
+
 routers.register("", patients_views.PatientViewSet, basename="patient")
 
 urlpatterns = routers.urls

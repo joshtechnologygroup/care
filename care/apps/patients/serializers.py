@@ -18,8 +18,9 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
             "patient_status",
             "facility",
             "patient_facility_id",
+            "admitted_at",
+            "discharged_at",
         )
-        read_only_fields = ("facility",)
 
 
 class GenderField(rest_serializers.RelatedField):
@@ -36,15 +37,13 @@ class GenderField(rest_serializers.RelatedField):
 
 
 class PatientSerializer(rest_serializers.ModelSerializer):
+    patient_facility = PatientFacilitySerializer(required=False, write_only=True)
     patient_status = rest_serializers.SerializerMethodField()
     gender = GenderField(queryset=patient_models.Patient.objects.none())
     ownership_type = rest_serializers.CharField(read_only=True)
     facility_type = rest_serializers.CharField(read_only=True)
     facility_name = rest_serializers.CharField(read_only=True)
     facility_district = rest_serializers.CharField(read_only=True)
-    facility = rest_serializers.PrimaryKeyRelatedField(
-        queryset=facility_models.Facility.objects.all(), required=False, write_only=True
-    )
 
     class Meta:
         model = patient_models.Patient
@@ -74,7 +73,7 @@ class PatientSerializer(rest_serializers.ModelSerializer):
             "native_state",
             "native_country",
             "pincode",
-            "facility",
+            "patient_facility",
         )
         read_only_fields = (
             "symptoms",
@@ -87,18 +86,10 @@ class PatientSerializer(rest_serializers.ModelSerializer):
         return instance.patient_status
 
     def create(self, validated_data):
-        facility = validated_data.pop("facility", None)
+        patient_facility = validated_data.pop('patient_facility', None)
         patient = super().create(validated_data)
-        if facility:
-            patient.patient_status = patient_constants.FACILITY_STATUS
-            patient_models.PatientFacility.objects.create(
-                patient=patient,
-                facility=facility,
-                patient_status=patient_models.PatientStatus.objects.get(name="Admitted to Facility"),
-            )
-        else:
-            patient.patient_status = patient_constants.HOME_ISOLATION
-        patient.save(update_fields=["patient_status"])
+        if patient_facility:
+            patient_models.PatientFacility.objects.create(**patient_facility, patient=patient) 
         return patient
 
 
@@ -144,12 +135,15 @@ class PatientTimeLineSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.PatientTimeLine
         fields = (
+            "id",
             "date",
             "description",
         )
 
 
 class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
+    portie_name = rest_serializers.CharField(source='user.name', read_only=True)
+    portie_phone_number = rest_serializers.CharField(source='user.phone_number', read_only=True)
     class Meta:
         model = patient_models.PortieCallingDetail
         fields = (
@@ -159,8 +153,9 @@ class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
             "patient_family",
             "called_at",
             "able_to_connect",
-            "able_to_connect",
             "comments",
+            "portie_name",
+            "portie_phone_number",
         )
 
     def validate_patient(self, patient):
@@ -310,10 +305,10 @@ class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
 class PatientFamilySerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.PatientFamily
-        fields = ("name", "relation", "age_year", "age_month", "gender", "phone_number")
+        fields = ("id","name", "relation", "age_year", "age_month", "gender", "phone_number",)
 
 
-class PortieCallingDetailSerializer(rest_serializers.ModelSerializer):
+class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
     name = rest_serializers.SerializerMethodField()
     portie_phone_number = rest_serializers.SerializerMethodField()
     patient_contact_number = rest_serializers.SerializerMethodField()
@@ -338,6 +333,7 @@ class PortieCallingDetailSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.PortieCallingDetail
         fields = (
+            "id",
             "name",
             "portie_phone_number",
             "status",
@@ -424,6 +420,7 @@ class PatientLabSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.PatientSampleTest
         fields = (
+            "id",
             "name",
             "code",
             "date_of_sample",
@@ -446,6 +443,7 @@ class PersonalDetailsSerializer(rest_serializers.ModelSerializer):
             "cluster_group",
             "age_years",
             "age_months",
+            "patient_status",
         )
 
 
@@ -463,7 +461,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         return PatientFamilySerializer(patient_models.PatientFamily.objects.filter(patient=instance), many=True).data
 
     def get_portie_calling_details(self, instance):
-        return PortieCallingDetailSerializer(
+        return PortieCallingDetailsSerializer(
             patient_models.PortieCallingDetail.objects.filter(patient=instance), many=True,
         ).data
 

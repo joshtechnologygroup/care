@@ -195,3 +195,15 @@ class StaffDesignationSerializer(rest_serializers.ModelSerializer):
             "id",
             "name",
         )
+
+
+class TestingLabSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = facility_models.TestingLab
+        fields = (
+            "id",
+            "code",
+            "name",
+            "lab_ownership_type",
+            "lab_type",
+        )

@@ -90,6 +90,7 @@ class AddressModel(models.Model):
 
     address = models.TextField()
     district = models.ForeignKey("accounts.District", on_delete=models.PROTECT, null=True, blank=True)
+    city = models.ForeignKey("accounts.City", on_delete=models.PROTECT, null=True, blank=True)
     state = models.ForeignKey("accounts.State", on_delete=models.PROTECT, null=True, blank=True)
     pincode = models.CharField(max_length=6, validators=[RegexValidator(r"^\d{1,6}$")], null=True, blank=True)
 

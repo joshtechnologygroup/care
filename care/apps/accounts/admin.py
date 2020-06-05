@@ -14,6 +14,10 @@ class StateAdmin(ImportExportModelAdmin):
     search_fields = ("name",)
 
 
+class CityAdmin(ImportExportModelAdmin):
+    search_fields = ("name",)
+
+
 class UserTypeAdmin(ImportExportModelAdmin):
     search_fields = ("name",)
 
@@ -69,6 +73,7 @@ class UserModelAdmin(UserAdmin):
 
 
 admin.site.register(accounts_models.State, StateAdmin)
+admin.site.register(accounts_models.City, CityAdmin)
 admin.site.register(accounts_models.District, DistrictAdmin)
 admin.site.register(accounts_models.LocalBody, LocalBodyAdmin)
 admin.site.register(accounts_models.Skill, SkillAdmin)

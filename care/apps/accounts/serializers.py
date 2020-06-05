@@ -143,6 +143,16 @@ class StateSerializer(rest_serializers.ModelSerializer):
         )
 
 
+class CitySerializer(rest_serializers.ModelSerializer):
+    """
+        Serializer for state City
+    """
+
+    class Meta:
+        model = accounts_models.District
+        fields = ("id", "name")
+
+
 class DistrictSerializer(rest_serializers.ModelSerializer):
     """
     Serializer for state model
@@ -195,11 +205,10 @@ class LoginResponseSerializer(rest_serializers.ModelSerializer):
 
 
 class LocalBodySerializer(rest_serializers.ModelSerializer):
-    district = DistrictSerializer()
 
     class Meta:
         model = accounts_models.LocalBody
-        fields = ("district", "name", "body_type", "localbody_code")
+        fields = ("id",  "name")
 
 
 class ForgotPasswordLinkSerializer(rest_serializers.Serializer):

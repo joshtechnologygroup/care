@@ -26,6 +26,19 @@ class State(models.Model):
         return f"{self.name}"
 
 
+class City(models.Model):
+    state = models.ForeignKey(State, on_delete=models.PROTECT)
+    name = models.CharField(
+        max_length=commons_constants.FIELDS_CHARACTER_LIMITS["NAME"], help_text="Name of the City",
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name_plural = 'cities'
+
+
 class District(models.Model):
     """
     Model to store districts

@@ -42,7 +42,7 @@ class ChangePasswordSerializer(BaseSetPasswordSerializer):
 
     def validate(self, attrs):
         super().validate(attrs)
-        if attrs.get('current_password') and not self.instance.check_password(attrs.get('current_password')):
+        if attrs.get("current_password") and not self.instance.check_password(attrs.get("current_password")):
             raise rest_serializers.ValidationError("Current Password is not correct")
         return attrs
 
@@ -63,31 +63,34 @@ class UserSerializer(ChangePasswordSerializer):
 
     def validate(self, attrs):
         response = super().validate(attrs)
-        if attrs.get('current_password'):
-            attrs.pop('current_password')
-        if attrs.get('password_1'):
-            attrs['password'] = attrs.pop('password_1')
-        if attrs.get('password_2'):
-            attrs.pop('password_2')
+        if attrs.get("current_password"):
+            attrs.pop("current_password")
+        if attrs.get("password_1"):
+            attrs["password"] = attrs.pop("password_1")
+        if attrs.get("password_2"):
+            attrs.pop("password_2")
         return response
 
     def update(self, instance, validated_data):
-        if validated_data.get('preferred_districts_id'):
-            filled_districts = validated_data.pop('preferred_districts_id')
+        if validated_data.get("preferred_districts_id"):
+            filled_districts = validated_data.pop("preferred_districts_id")
             existing_user_districts = accounts_models.UserDistrictPreference.objects.filter(user=instance)
             preferred_districts = [
-                district for district in filled_districts if district.id not in existing_user_districts.values_list(
-                    'district_id', flat=True
-                )
+                district
+                for district in filled_districts
+                if district.id not in existing_user_districts.values_list("district_id", flat=True)
             ]
-            accounts_models.UserDistrictPreference.objects.bulk_create([
-                accounts_models.UserDistrictPreference(user=instance, district=district) for district in preferred_districts
-            ])
+            accounts_models.UserDistrictPreference.objects.bulk_create(
+                [
+                    accounts_models.UserDistrictPreference(user=instance, district=district)
+                    for district in preferred_districts
+                ]
+            )
             accounts_models.UserDistrictPreference.objects.exclude(
                 district__in=filled_districts, user=instance
             ).delete()
-        if validated_data.get('password'):
-            password = validated_data.pop('password')
+        if validated_data.get("password"):
+            password = validated_data.pop("password")
             instance.set_password(password)
             instance.save()
         user_queryset = accounts_models.User.objects.filter(id=instance.id)
@@ -114,7 +117,9 @@ class UserSerializer(ChangePasswordSerializer):
         return instance.facilityuser_set.values_list("facility_id", flat=True)
 
     def get_preferred_districts(self, instance):
-        return accounts_models.UserDistrictPreference.objects.filter(user=instance).values_list('district_id', flat=True)
+        return accounts_models.UserDistrictPreference.objects.filter(user=instance).values_list(
+            "district_id", flat=True
+        )
 
 
 class UserTypeSerializer(rest_serializers.ModelSerializer):
@@ -205,10 +210,9 @@ class LoginResponseSerializer(rest_serializers.ModelSerializer):
 
 
 class LocalBodySerializer(rest_serializers.ModelSerializer):
-
     class Meta:
         model = accounts_models.LocalBody
-        fields = ("id",  "name")
+        fields = ("id", "name")
 
 
 class ForgotPasswordLinkSerializer(rest_serializers.Serializer):

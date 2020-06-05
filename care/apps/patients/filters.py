@@ -91,7 +91,7 @@ class PatientShortFilter(filters.FilterSet):
 
     class Meta:
         model = patients_models.Patient
-        fields = ('name',)
+        fields = ("name",)
 
 
 class CustomDateTimeRangeField(filter_fields.RangeField):

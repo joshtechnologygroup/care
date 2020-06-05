@@ -36,7 +36,7 @@ class City(models.Model):
         return f"{self.name}"
 
     class Meta:
-        verbose_name_plural = 'cities'
+        verbose_name_plural = "cities"
 
 
 class District(models.Model):

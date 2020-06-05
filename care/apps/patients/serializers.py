@@ -497,19 +497,17 @@ class PatientLabSerializer(rest_serializers.ModelSerializer):
 
 
 class PersonalDetailsSerializer(rest_serializers.ModelSerializer):
-    age_years = rest_serializers.IntegerField(source="year")
-    age_months = rest_serializers.IntegerField(source="month")
-
     class Meta:
         model = patient_models.Patient
         fields = (
+            "id",
             "name",
             "icmr_id",
             "govt_id",
             "gender",
             "cluster_group",
-            "age_years",
-            "age_months",
+            "year",
+            "month",
             "patient_status",
         )
 

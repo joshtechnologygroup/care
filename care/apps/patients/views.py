@@ -186,13 +186,13 @@ class PatientSampleTestViewSet(
 
 
 class PatientTransferViewSet(
-    rest_mixins.ListModelMixin, rest_mixins.UpdateModelMixin, rest_viewsets.GenericViewSet,
+    rest_mixins.ListModelMixin, rest_mixins.UpdateModelMixin, rest_mixins.CreateModelMixin, rest_viewsets.GenericViewSet,
 ):
     """
     ViewSet for Patient Transfer List
     """
 
-    http_method_names = ("patch", "get")
+    http_method_names = ("patch", "get", "post",)
     queryset = patient_models.PatientTransfer.objects.all()
     serializer_class = patient_serializers.PatientTransferSerializer
     permission_classes = (rest_permissions.IsAuthenticated,)
@@ -237,7 +237,32 @@ class PatientTransferViewSet(
     def get_serializer_class(self):
         if self.action == "partial_update":
             return patient_serializers.PatientTransferUpdateSerializer
+        if self.action == "create":
+            return patient_serializers.PatientTransferCreateSerializer
         return self.serializer_class
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({}, status=status.HTTP_200_OK)
+
+
+class PatientTransferShortFacilityViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):
+    http_method_names = ("get",)
+    filterset_class = patients_filters.PatientShortFilter
+    serializer_class = patient_serializers.PatientShortSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    pagination_class = commons_pagination.CustomPagination
+    permission_classes = (rest_permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        from_facility = self.request.GET.get('from_facility', None)
+        return patient_models.Patient.objects.filter(
+            id__in=patient_models.PatientFacility.objects.filter(
+                facility_id=from_facility
+            ).values_list('patient', flat=True)
+        ) if from_facility else patient_models.Patient.objects.all()
 
 
 class PatientFamilyViewSet(

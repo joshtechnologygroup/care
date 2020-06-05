@@ -38,6 +38,8 @@ class GenderField(rest_serializers.RelatedField):
 
 class PatientSerializer(rest_serializers.ModelSerializer):
     patient_facility = PatientFacilitySerializer(required=False, write_only=True)
+    patient_symptoms = rest_serializers.ListField(required=False)
+    patient_diseases = rest_serializers.ListField(required=False)
     patient_status = rest_serializers.SerializerMethodField()
     gender = GenderField(queryset=patient_models.Patient.objects.none())
     ownership_type = rest_serializers.CharField(read_only=True)
@@ -74,10 +76,8 @@ class PatientSerializer(rest_serializers.ModelSerializer):
             "native_country",
             "pincode",
             "patient_facility",
-        )
-        read_only_fields = (
-            "symptoms",
-            "diseases",
+            "patient_symptoms",
+            "patient_diseases",
         )
 
     def get_patient_status(self, instance):
@@ -87,9 +87,19 @@ class PatientSerializer(rest_serializers.ModelSerializer):
 
     def create(self, validated_data):
         patient_facility = validated_data.pop("patient_facility", None)
+        patient_symptoms = validated_data.pop("patient_symptoms", None)
+        patient_diseases = validated_data.pop("patient_diseases", None)
         patient = super().create(validated_data)
         if patient_facility:
             patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
+        if patient_symptoms:
+            patient_models.PatientSymptom.objects.bulk_create(
+                [patient_models.PatientSymptom(symptom_id=symptom, patient=patient) for symptom in patient_symptoms]
+            )
+        if patient_diseases:
+            patient_models.PatientDisease.objects.bulk_create(
+                [patient_models.PatientDisease(disease_id=disease, patient=patient) for disease in patient_diseases]
+            )
         return patient
 
 
@@ -151,7 +161,6 @@ class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
             "id",
             "portie",
             "patient",
-            "patient_family",
             "called_at",
             "able_to_connect",
             "comments",
@@ -238,6 +247,48 @@ class PatientTransferSerializer(rest_serializers.ModelSerializer):
             "id",
             "comments",
         )
+
+
+class PatientShortSerializer(rest_serializers.ModelSerializer):
+
+    class Meta:
+        model = patient_models.Patient
+        fields = ("name", "id",)
+
+
+class PatientTransferCreateSerializer(rest_serializers.ModelSerializer):
+    """
+    Serializer for creating patient transfer
+    """
+    patient = rest_serializers.PrimaryKeyRelatedField(queryset=patient_models.Patient.objects.all())
+    from_facility = rest_serializers.PrimaryKeyRelatedField(queryset=facility_models.Facility.objects.all())
+
+    class Meta:
+        model = patient_models.PatientTransfer
+        fields = (
+            "status",
+            "comments",
+            "to_facility",
+            "patient",
+            "from_facility",
+        )
+
+    def validate(self, attrs):
+        patient = attrs.pop("patient")
+        from_facility = attrs.pop("from_facility")
+        patient_facility = patient_models.PatientFacility.objects.filter(
+            patient=patient, facility=from_facility
+        ).first()
+        if not patient_facility:
+            raise rest_serializers.ValidationError("This Patient currently does not exist in selected From facility")
+        if patient_models.PatientTransfer.objects.filter(
+                from_patient_facility=patient_facility,
+                to_facility=attrs.get('to_facility')
+        ):
+            raise rest_serializers.ValidationError("This Patient transfer request has already been generated")
+        attrs['from_patient_facility'] = patient_facility
+        attrs['status_updated_at'] = datetime.now()
+        return attrs
 
 
 class PatientTransferUpdateSerializer(rest_serializers.ModelSerializer):
@@ -341,7 +392,7 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
         return instance.patient.phone_number
 
     def get_patient_relation(self, instance):
-        return instance.patient_family.relation if instance.patient_family else "Self"
+        return instance.relation
 
     def get_status(self, instance):
         return instance.able_to_connect

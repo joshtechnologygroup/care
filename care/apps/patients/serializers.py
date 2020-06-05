@@ -370,11 +370,11 @@ class PatientFamilySerializer(rest_serializers.ModelSerializer):
             "id",
             "name",
             "relation",
+            "patient",
             "age_year",
             "age_month",
             "gender",
-            "phone_number",
-            "patient",
+            "phone_number,
         )
 
 

@@ -12,9 +12,7 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.commons import (
-    pagination as commons_pagination
-)
+from apps.commons import pagination as commons_pagination
 
 from apps.accounts import (
     models as accounts_models,

@@ -161,6 +161,11 @@ class PortieCallingDetailViewSet(
     serializer_class = patient_serializers.PortieCallingDetailSerialzier
     permission_classes = (rest_permissions.IsAuthenticated,)
 
+    def get_serializer_class(self):
+        if self.action == 'update':
+            return patient_serializers.PortieCallingUpdateSerializer
+        return patient_serializers.PortieCallingDetailSerialzier
+
     def get_queryset(self):
         queryset = patient_models.PortieCallingDetail.objects.all()
         if self.request.user.user_type and self.request.user.user_type.name == commons_constants.FACILITY_MANAGER:

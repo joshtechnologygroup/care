@@ -9,6 +9,7 @@ from rest_framework import (
     status as rest_status,
     viewsets as rest_viewsets,
 )
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -30,6 +31,14 @@ class UserViewSet(rest_viewsets.ModelViewSet):
 
     queryset = accounts_models.User.objects.all()
     serializer_class = accounts_serializers.UserSerializer
+
+    @action(detail=False)
+    def portea(self, *args, **kwargs):
+        return Response(
+            accounts_serializers.PorteaSerializer(
+                instance=accounts_models.User.objects.filter(user_type__name__iexact="Portea"), many=True,
+            ).data
+        )
 
 
 class UserTypeListViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):

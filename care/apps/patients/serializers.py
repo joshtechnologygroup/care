@@ -378,9 +378,7 @@ class PatientFamilySerializer(rest_serializers.ModelSerializer):
 class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
     name = rest_serializers.SerializerMethodField()
     portie_phone_number = rest_serializers.SerializerMethodField()
-    patient_contact_number = rest_serializers.SerializerMethodField()
-    patient_relation = rest_serializers.SerializerMethodField()
-    status = rest_serializers.SerializerMethodField()
+    patient_phone_number = rest_serializers.SerializerMethodField()
 
     def get_name(self, instance):
         return instance.portie.name
@@ -388,14 +386,8 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
     def get_portie_phone_number(self, instance):
         return instance.portie.phone_number
 
-    def get_patient_contact_number(self, instance):
+    def get_patient_phone_number(self, instance):
         return instance.patient.phone_number
-
-    def get_patient_relation(self, instance):
-        return instance.relation
-
-    def get_status(self, instance):
-        return instance.able_to_connect
 
     class Meta:
         model = patient_models.PortieCallingDetail
@@ -403,11 +395,27 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
             "id",
             "name",
             "portie_phone_number",
-            "status",
-            "patient_contact_number",
-            "patient_relation",
-            "status",
+            "patient_phone_number",
+            "relation",
             "comments",
+            "called_at",
+            'portie',
+            "able_to_connect",
+        )
+
+
+class PortieCallingUpdateSerializer(rest_serializers.ModelSerializer):
+    patient_phone_number = rest_serializers.CharField(source='patient_number')
+
+    class Meta:
+        model = patient_models.PortieCallingDetail
+        fields = (
+            "patient_phone_number",
+            "relation",
+            "comments",
+            "called_at",
+            "able_to_connect",
+            "portie"
         )
 
 

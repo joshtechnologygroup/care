@@ -455,7 +455,6 @@ class PatientLabSerializer(rest_serializers.ModelSerializer):
 
 
 class PersonalDetailsSerializer(rest_serializers.ModelSerializer):
-
     class Meta:
         model = patient_models.Patient
         fields = (

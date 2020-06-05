@@ -374,7 +374,7 @@ class PatientFamilySerializer(rest_serializers.ModelSerializer):
             "age_year",
             "age_month",
             "gender",
-            "phone_number,
+            "phone_number",
         )
 
 

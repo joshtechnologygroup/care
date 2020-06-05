@@ -8,6 +8,7 @@ from rest_framework import (
     permissions as rest_permissions,
     status as rest_status,
     viewsets as rest_viewsets,
+    decorators as rest_decorators,
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +20,10 @@ from apps.accounts import (
     filters as accounts_filters,
     serializers as accounts_serializers,
 )
-from apps.commons import permissions as commons_permissions
+from apps.commons import (
+    permissions as commons_permissions,
+    constants as commons_constants,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +32,14 @@ class UserViewSet(rest_viewsets.ModelViewSet):
 
     queryset = accounts_models.User.objects.all()
     serializer_class = accounts_serializers.UserSerializer
+
+    @rest_decorators.action(methods=['get'], detail=False)
+    def portie(self, request, *args, **kwargs):
+        return Response(
+            accounts_serializers.PortieSerializer(accounts_models.User.objects.filter(
+                user_type__name=commons_constants.PORTEA
+            ), many=True,).data
+        )
 
 
 class UserTypeListViewSet(rest_mixins.ListModelMixin, rest_viewsets.GenericViewSet):

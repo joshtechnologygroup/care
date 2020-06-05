@@ -54,6 +54,13 @@ class ChangePasswordSerializer(BaseSetPasswordSerializer):
         )
 
 
+class PortieSerializer(rest_serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'phone_number', 'email')
+
+
 class UserSerializer(ChangePasswordSerializer):
     associated_facilities = rest_serializers.SerializerMethodField()
     preferred_districts = rest_serializers.SerializerMethodField()

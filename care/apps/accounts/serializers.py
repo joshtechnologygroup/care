@@ -86,6 +86,7 @@ class UserSerializer(ChangePasswordSerializer):
                 for district in filled_districts
                 if district.id not in existing_user_districts.values_list("district_id", flat=True)
             ]
+            print(existing_user_districts, preferred_districts)
             accounts_models.UserDistrictPreference.objects.bulk_create(
                 [
                     accounts_models.UserDistrictPreference(user=instance, district=district)

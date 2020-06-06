@@ -466,12 +466,28 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
         patient_symptoms = validated_data.pop("patient_symptoms", None)
         patient_diseases = validated_data.pop("patient_diseases", None)
         if patient_symptoms:
+            existing_symptoms = patient_models.PatientSymptom.objects.filter(patient=instance)
+            print(existing_symptoms)
+            preferred_symptoms = [
+                symptom
+                for symptom in patient_symptoms
+                if symptom not in existing_symptoms.values_list("symptom_id", flat=True)
+            ]
+            patient_models.PatientSymptom.objects.filter(
+                symptom_id__in=patient_symptoms, patient=instance
+            ).delete()
             patient_models.PatientSymptom.objects.bulk_create(
                 [
-                    patient_models.PatientSymptom(symptom_id=symptom, patient_id=patient_id)
-                    for symptom in patient_symptoms
+                    patient_models.PatientSymptom(patient=instance, symptom_id=symptom)
+                    for symptom in preferred_symptoms
                 ]
             )
+            # patient_models.PatientSymptom.objects.bulk_create(
+            #     [
+            #         patient_models.PatientSymptom(symptom_id=symptom, patient_id=patient_id)
+            #         for symptom in patient_symptoms
+            #     ]
+            # )
         if patient_diseases:
             patient_models.PatientDisease.objects.bulk_create(
                 [

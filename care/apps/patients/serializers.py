@@ -372,6 +372,7 @@ class PatientFamilySerializer(rest_serializers.ModelSerializer):
             "age_month",
             "gender",
             "phone_number",
+            "patient",
         )
 
 
@@ -387,7 +388,7 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
         return instance.portie.phone_number
 
     def get_patient_phone_number(self, instance):
-        return instance.patient.phone_number
+        return instance.patient_number
 
     class Meta:
         model = patient_models.PortieCallingDetail
@@ -481,12 +482,8 @@ class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
 
 
 class PatientLabSerializer(rest_serializers.ModelSerializer):
-    name = rest_serializers.SerializerMethodField()
     code = rest_serializers.SerializerMethodField()
 
-    def get_name(self, instance):
-        testing_lab = facility_models.TestingLab.objects.filter(id=instance.testing_lab.id)
-        return testing_lab.first().name if testing_lab else ""
 
     def get_code(self, instance):
         testing_lab = facility_models.TestingLab.objects.filter(id=instance.testing_lab.id)
@@ -496,11 +493,11 @@ class PatientLabSerializer(rest_serializers.ModelSerializer):
         model = patient_models.PatientSampleTest
         fields = (
             "id",
-            "name",
             "code",
             "date_of_sample",
             "result",
             "status_updated_at",
+            "testing_lab"
         )
 
 
@@ -537,7 +534,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
 
     def get_portie_calling_details(self, instance):
         return PortieCallingDetailsSerializer(
-            patient_models.PortieCallingDetail.objects.filter(patient=instance), many=True,
+            patient_models.PortieCallingDetail.objects.filter(patient=instance).order_by('-created_at'), many=True,
         ).data
 
     def get_contact_details(self, instance):
@@ -555,7 +552,9 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         ).data
 
     def get_patient_lab_details(self, instance):
-        return PatientLabSerializer(patient_models.PatientSampleTest.objects.filter(patient=instance), many=True).data
+        return PatientLabSerializer(patient_models.PatientSampleTest.objects.filter(patient=instance).order_by(
+            '-status_updated_at'
+        ), many=True).data
 
     def get_personal_details(self, instance):
         return PersonalDetailsSerializer([instance], many=True).data

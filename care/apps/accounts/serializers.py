@@ -128,6 +128,13 @@ class UserSerializer(ChangePasswordSerializer):
         )
 
 
+class PorteaSerializer(rest_serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ("id", "name",)
+
+
 class UserTypeSerializer(rest_serializers.ModelSerializer):
     """
     User type serializer

@@ -406,24 +406,17 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
             "relation",
             "comments",
             "called_at",
-            'portie',
+            "portie",
             "able_to_connect",
         )
 
 
 class PortieCallingUpdateSerializer(rest_serializers.ModelSerializer):
-    patient_phone_number = rest_serializers.CharField(source='patient_number')
+    patient_phone_number = rest_serializers.CharField(source="patient_number")
 
     class Meta:
         model = patient_models.PortieCallingDetail
-        fields = (
-            "patient_phone_number",
-            "relation",
-            "comments",
-            "called_at",
-            "able_to_connect",
-            "portie"
-        )
+        fields = ("patient_phone_number", "relation", "comments", "called_at", "able_to_connect", "portie")
 
 
 class ContactDetailsSerializer(rest_serializers.ModelSerializer):
@@ -474,7 +467,6 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
         )
 
     def update(self, instance, validated_data):
-        patient_id = self.context["request"].parser_context["kwargs"]["pk"]
         patient_symptoms = validated_data.pop("patient_symptoms", None)
         patient_diseases = validated_data.pop("patient_diseases", None)
         if patient_symptoms:
@@ -524,21 +516,13 @@ class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
 class PatientLabSerializer(rest_serializers.ModelSerializer):
     code = rest_serializers.SerializerMethodField()
 
-
     def get_code(self, instance):
         testing_lab = facility_models.TestingLab.objects.filter(id=instance.testing_lab.id)
         return testing_lab.first().code if testing_lab else ""
 
     class Meta:
         model = patient_models.PatientSampleTest
-        fields = (
-            "id",
-            "code",
-            "date_of_sample",
-            "result",
-            "status_updated_at",
-            "testing_lab"
-        )
+        fields = ("id", "code", "date_of_sample", "result", "status_updated_at", "testing_lab")
 
 
 class PersonalDetailsSerializer(rest_serializers.ModelSerializer):
@@ -573,7 +557,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
 
     def get_portie_calling_details(self, instance):
         return PortieCallingDetailsSerializer(
-            patient_models.PortieCallingDetail.objects.filter(patient=instance).order_by('-created_at'), many=True,
+            patient_models.PortieCallingDetail.objects.filter(patient=instance).order_by("-created_at"), many=True,
         ).data
 
     def get_contact_details(self, instance):
@@ -591,9 +575,9 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         ).data
 
     def get_patient_lab_details(self, instance):
-        return PatientLabSerializer(patient_models.PatientSampleTest.objects.filter(patient=instance).order_by(
-            '-status_updated_at'
-        ), many=True).data
+        return PatientLabSerializer(
+            patient_models.PatientSampleTest.objects.filter(patient=instance).order_by("-status_updated_at"), many=True
+        ).data
 
     def get_personal_details(self, instance):
         return PersonalDetailsSerializer([instance], many=True).data

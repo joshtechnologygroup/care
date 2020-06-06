@@ -86,7 +86,6 @@ class UserSerializer(ChangePasswordSerializer):
                 for district in filled_districts
                 if district.id not in existing_user_districts.values_list("district_id", flat=True)
             ]
-            print(existing_user_districts, preferred_districts)
             accounts_models.UserDistrictPreference.objects.bulk_create(
                 [
                     accounts_models.UserDistrictPreference(user=instance, district=district)
@@ -130,10 +129,12 @@ class UserSerializer(ChangePasswordSerializer):
 
 
 class PorteaSerializer(rest_serializers.ModelSerializer):
-
     class Meta:
         model = User
-        fields = ("id", "name",)
+        fields = (
+            "id",
+            "name",
+        )
 
 
 class UserTypeSerializer(rest_serializers.ModelSerializer):

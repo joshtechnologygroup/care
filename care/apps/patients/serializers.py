@@ -155,8 +155,9 @@ class PatientTimeLineSerializer(rest_serializers.ModelSerializer):
 
 
 class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
-    portie_name = rest_serializers.CharField(source="user.name", read_only=True)
-    portie_phone_number = rest_serializers.CharField(source="user.phone_number", read_only=True)
+    portie_name = rest_serializers.CharField(source="portie.name", read_only=True)
+    portie_phone_number = rest_serializers.CharField(source="portie.phone_number", read_only=True)
+    patient_phone_number = rest_serializers.CharField(source="patient_number")
 
     class Meta:
         model = patient_models.PortieCallingDetail
@@ -167,8 +168,10 @@ class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
             "called_at",
             "able_to_connect",
             "comments",
+            "relation",
             "portie_name",
             "portie_phone_number",
+            "patient_phone_number",
         )
 
     def validate_patient(self, patient):
@@ -378,15 +381,14 @@ class PatientFamilySerializer(rest_serializers.ModelSerializer):
             "age_month",
             "gender",
             "phone_number",
+            "patient",
         )
 
 
 class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
     name = rest_serializers.SerializerMethodField()
     portie_phone_number = rest_serializers.SerializerMethodField()
-    patient_contact_number = rest_serializers.SerializerMethodField()
-    patient_relation = rest_serializers.SerializerMethodField()
-    status = rest_serializers.SerializerMethodField()
+    patient_phone_number = rest_serializers.CharField(source="patient_number")
 
     def get_name(self, instance):
         return instance.portie.name
@@ -394,26 +396,33 @@ class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
     def get_portie_phone_number(self, instance):
         return instance.portie.phone_number
 
-    def get_patient_contact_number(self, instance):
-        return instance.patient.phone_number
-
-    def get_patient_relation(self, instance):
-        return instance.relation
-
-    def get_status(self, instance):
-        return instance.able_to_connect
-
     class Meta:
         model = patient_models.PortieCallingDetail
         fields = (
             "id",
             "name",
             "portie_phone_number",
-            "status",
-            "patient_contact_number",
-            "patient_relation",
-            "status",
+            "patient_phone_number",
+            "relation",
             "comments",
+            "called_at",
+            'portie',
+            "able_to_connect",
+        )
+
+
+class PortieCallingUpdateSerializer(rest_serializers.ModelSerializer):
+    patient_phone_number = rest_serializers.CharField(source='patient_number')
+
+    class Meta:
+        model = patient_models.PortieCallingDetail
+        fields = (
+            "patient_phone_number",
+            "relation",
+            "comments",
+            "called_at",
+            "able_to_connect",
+            "portie"
         )
 
 
@@ -513,12 +522,8 @@ class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):
 
 
 class PatientLabSerializer(rest_serializers.ModelSerializer):
-    name = rest_serializers.SerializerMethodField()
     code = rest_serializers.SerializerMethodField()
 
-    def get_name(self, instance):
-        testing_lab = facility_models.TestingLab.objects.filter(id=instance.testing_lab.id)
-        return testing_lab.first().name if testing_lab else ""
 
     def get_code(self, instance):
         testing_lab = facility_models.TestingLab.objects.filter(id=instance.testing_lab.id)
@@ -528,11 +533,11 @@ class PatientLabSerializer(rest_serializers.ModelSerializer):
         model = patient_models.PatientSampleTest
         fields = (
             "id",
-            "name",
             "code",
             "date_of_sample",
             "result",
             "status_updated_at",
+            "testing_lab"
         )
 
 
@@ -561,13 +566,14 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
     patient_timeline = rest_serializers.SerializerMethodField()
     facility_details = rest_serializers.SerializerMethodField()
     patient_lab_details = rest_serializers.SerializerMethodField()
+    patient_status = rest_serializers.SerializerMethodField()
 
     def get_patient_family_details(self, instance):
         return PatientFamilySerializer(patient_models.PatientFamily.objects.filter(patient=instance), many=True).data
 
     def get_portie_calling_details(self, instance):
         return PortieCallingDetailsSerializer(
-            patient_models.PortieCallingDetail.objects.filter(patient=instance), many=True,
+            patient_models.PortieCallingDetail.objects.filter(patient=instance).order_by('-created_at'), many=True,
         ).data
 
     def get_contact_details(self, instance):
@@ -585,10 +591,15 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
         ).data
 
     def get_patient_lab_details(self, instance):
-        return PatientLabSerializer(patient_models.PatientSampleTest.objects.filter(patient=instance), many=True).data
+        return PatientLabSerializer(patient_models.PatientSampleTest.objects.filter(patient=instance).order_by(
+            '-status_updated_at'
+        ), many=True).data
 
     def get_personal_details(self, instance):
         return PersonalDetailsSerializer([instance], many=True).data
+
+    def get_patient_status(self, instance):
+        return instance.patient_status
 
     class Meta:
         model = None

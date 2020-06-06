@@ -1,21 +1,27 @@
-id,name,facility_type,address,district,owned_by,facility_code,created_at,updated_at
-1,Hotel Apra Inn,1,"15A/61 WEA Colony Ajmal Khan Road, Karol Bagh",2,3,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-2,APNA Hotel,2,"15A/61 WEA Colony Ajmal Khan Road, Karol Bagh",2,3,2,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-3,Swami Parmanand Prakritik Chikitsalaya Yoga & Anushandhan Kendra,3,"West Vinod Nagar",3,3,3,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-4,Parmanand Prakritik,1," West Vinod Nagar",3,2,4,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-5,Shrine Hospital,3,"Main Bawana Road, Sector 17, Rohini (Connected with MVH Hostpital)",6,3,5,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-6,Yogesh Kansal Hotel,2,"Main Bawana Road, Sector 17, Rohini (Connected with MVH Hostpital)",6,2,6,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-7,Maharaja Agraseen Bhawan,1,"CS Pocket 12, Rithala Road, Sector 5, Rohini",8,1,7,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-8,Khosla Hospital,3,"Shalimar Bagh",8,2,8,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-9,Shri Satnam Bhawan,3,"Block C-3, Phase-2, Ashok Vihar, Delhi",8,1,9,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-10,Quanrantine Faclity,2,"DUSIB flats, SE Block, Sultan Puri",8,1,10,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-11,Prime Stay B & B,3,"Haiderpur, Shalimar Bagh",8,3,11,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-12,Hotel Park,1,"Shahdara",4,1,12,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-13,Hotel In,2,"Shahdara",4,2,13,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-14,Chatterpur Belemonde Hotel,1,"MANDIR Road, Sahoorpur Extention, IIPM, Satbari, New Delhi road, Sahoorpur, Extension, Mehraul",9,1,14,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-15,Bensups Hospital,1,"Dwarka",10,3,15,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-16,BH Salvas,3,"Chandan Park, Jharoda Road, Najabgarh",10,1,16,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-17,The Exotica Grand,3,"1/12, West Patel Nagar",11,2,17,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-18,Golden Tulip Hotel,3,"Hari Nagar",11,2,18,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-19,Swift Hotel in,2,"Meera Bagh",11,3,19,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
-20,Hotel Amrapali Grand,2,"2/16 East Patel Nagar",11,3,20,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+id,name,facility_type,address,district,owned_by,facility_code,pincode,state,created_at,updated_at
+1,DUSIB flat Dwarka,1,Dwarka Sector 16-B,9,2,DL1101,110078,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+2,Narela DDA Flats,1,"SECTOR G2 Bhorgarh, Narela",7,2,DL1102,110040,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+3,PTS Dwarka,1,"Plot No.- 23, Dwarka Sector 9, Dwarka",1,2,DL1103,110075,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+4,Hotel Ginger,1,"Ginger Hotel Complex, Maharaja Surajmal Marg, Block C, Surajmal Vihar",2,3,DL1104,110092,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+5,Police Quarters Mandoli,1,"Saboli Internal Road, Sanoli, Mandoli",6,2,DL1105,110093,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+6,Terapanth Bhawan,1,"Main Chhatarpur Rd, Dr Ambedkar Colony, Chhatarpur",9,3,DL1106,110030,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+7,DUSIB flat Sultanpuri,1,"JJ Basti opposite F-7 Block, Sultan Puri",7,2,DL1107,110086,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+8,"Jogabai School, NFC",1,"Chowk, Jamia, Batla House, Jamia Nagar, Okhla",8,2,DL1109,110025,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+9,C.S.A. School,1,New Friends Colony A Block-251 New Delhi,8,2,DL1110,110025,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+10,GB Sr. Sec. School No.3,1,"Block E, Mohan Cooperative Industrial Estate, Badarpur, New Delhi",8,2,DL1111,110044,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+11,YMCA public school,1,"Railway Station Road, near Post Office, Nizamuddin East, New Delhi",8,2,DL1112,110013,1,2020-05-16 05:16:53.597089,2020-05-16 05:16:53.597089
+12,Burari Hospital,2,"Kaushik Enclave, Shankarpura, Burari",5,3,DL1126,110084,1,2020-05-16 05:16:53.597103,2020-05-16 05:16:53.597103
+13,Febris Multispecialty Hospital,2,"Plot No: 20, Sector-A7, Narela, New Delhi",7,3,DL1118,110040,1,2020-05-16 05:16:53.597095,2020-05-16 05:16:53.597095
+14,Chaudhary Brahm Prakash Ayurved Charak Sansthan,2,"Ch. Brahm Prakash Ayurved Charak Sansthan New Delhi, Ghummanhera",9,3,DL1119,110073,1,2020-05-16 05:16:53.597096,2020-05-16 05:16:53.597096
+15,Dwarka Hospital,2,"B-92,Pipe Line, Patel Garden, Kakrola, New Delhi",11,3,DL1120,110059,1,2020-05-16 05:16:53.597097,2020-05-16 05:16:53.597097
+16,"Maha Durga Charitable Trust Hospital
+Hospital ",3,"Rishabh Park, Phase 3, Model Town",7,2,DL1121,110009,1,2020-05-16 05:16:53.597098,2020-05-16 05:16:53.597098
+17,Sir Gangaram City Hospital ,3,"Sarhadi Gandhi Marg, Old Rajinder Nagar, Rajinder Nagar, New Delhi",1,2,DL1122,110060,1,2020-05-16 05:16:53.597099,2020-05-16 05:16:53.597099
+18,Sir Ganga Ram Kolmet Hospital,3,Rajendra Nagar New Delhi,1,3,DL1123,110060,1,2020-05-16 05:16:53.597100,2020-05-16 05:16:53.597100
+19,Indraprastha Apollo Hospital,3,"metro station, Mathura Road Sarita Vihar opp to jasola Appllo, New Delhi",8,3,DL1124,110076,1,2020-05-16 05:16:53.597101,2020-05-16 05:16:53.597101
+20,Max Hospital Saket,3,"1, 2, Press Enclave Marg, Saket Institutional Area, Saket",8,3,DL1125,110017,1,2020-05-16 05:16:53.597102,2020-05-16 05:16:53.597102
+21,Lok Nayak Hospital,3,"near, metro Station Central, Jawaharlal Nehru Marg, Delhi Gate, New Delhi",1,2,DL1113,110002,1,2020-05-16 05:16:53.597090,2020-05-16 05:16:53.597090
+22,Rajiv Gandhi Super Speciality hospital,3,"Taharpur Rd, Taharpur, Taharpur Village, Dilshad Garden, New Delhi",2,2,DL1114,110093,1,2020-05-16 05:16:53.597091,2020-05-16 05:16:53.597091
+23,Guru Teg Bahadur Hospital,3,"Tahirpur Rd, GTB Enclave, Dilshad Garden, New Delhi",2,2,DL1115,110095,1,2020-05-16 05:16:53.597092,2020-05-16 05:16:53.597092
+24,Deen Dayal Upadhyay Hospital,3,"Shaheed Mangal Pandey Marg, Nanak Pura, Hari Nagar, New Delhi",11,2,DL1116,110064,1,2020-05-16 05:16:53.597093,2020-05-16 05:16:53.597093
+25,Dr. Baba Saheb Ambedkar Hospital,3,"Metro Station, Bhagawan Mahavir Marg, Sector 6 Rd, Rohini, New Delhi",7,2,DL1117,110085,1,2020-05-16 05:16:53.597094,2020-05-16 05:16:53.597094

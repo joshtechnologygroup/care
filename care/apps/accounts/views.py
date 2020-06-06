@@ -10,6 +10,7 @@ from rest_framework import (
     viewsets as rest_viewsets,
     decorators as rest_decorators,
 )
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -33,11 +34,11 @@ class UserViewSet(rest_viewsets.ModelViewSet):
     queryset = accounts_models.User.objects.all()
     serializer_class = accounts_serializers.UserSerializer
 
-    @rest_decorators.action(methods=["get"], detail=False)
-    def portie(self, request, *args, **kwargs):
+    @action(detail=False)
+    def portea(self, *args, **kwargs):
         return Response(
-            accounts_serializers.PortieSerializer(
-                accounts_models.User.objects.filter(user_type__name=commons_constants.PORTEA), many=True,
+            accounts_serializers.PorteaSerializer(
+                instance=accounts_models.User.objects.filter(user_type__name__iexact=commons_constants.PORTEA), many=True,
             ).data
         )
 

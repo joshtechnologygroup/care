@@ -8,21 +8,23 @@ from rest_framework import (
     permissions as rest_permissions,
     status as rest_status,
     viewsets as rest_viewsets,
+    decorators as rest_decorators,
 )
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.commons import (
-    pagination as commons_pagination
-)
+from apps.commons import pagination as commons_pagination
 
 from apps.accounts import (
     models as accounts_models,
     filters as accounts_filters,
     serializers as accounts_serializers,
 )
-from apps.commons import permissions as commons_permissions
+from apps.commons import (
+    permissions as commons_permissions,
+    constants as commons_constants,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ class UserViewSet(rest_viewsets.ModelViewSet):
     def portea(self, *args, **kwargs):
         return Response(
             accounts_serializers.PorteaSerializer(
-                instance=accounts_models.User.objects.filter(user_type__name__iexact="Portea"), many=True,
+                instance=accounts_models.User.objects.filter(user_type__name__iexact=commons_constants.PORTEA), many=True,
             ).data
         )
 

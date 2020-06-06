@@ -105,9 +105,8 @@ class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
 
 
 class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
-
     def validate(self, attrs):
-        attrs['created_by'] = self.context['request'].user
+        attrs["created_by"] = self.context["request"].user
         return attrs
 
     class Meta:

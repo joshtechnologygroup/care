@@ -191,13 +191,20 @@ class PatientSampleTestViewSet(
 
 
 class PatientTransferViewSet(
-    rest_mixins.ListModelMixin, rest_mixins.UpdateModelMixin, rest_mixins.CreateModelMixin, rest_viewsets.GenericViewSet,
+    rest_mixins.ListModelMixin,
+    rest_mixins.UpdateModelMixin,
+    rest_mixins.CreateModelMixin,
+    rest_viewsets.GenericViewSet,
 ):
     """
     ViewSet for Patient Transfer List
     """
 
-    http_method_names = ("patch", "get", "post",)
+    http_method_names = (
+        "patch",
+        "get",
+        "post",
+    )
     queryset = patient_models.PatientTransfer.objects.all()
     serializer_class = patient_serializers.PatientTransferSerializer
     permission_classes = (rest_permissions.IsAuthenticated,)
@@ -262,12 +269,16 @@ class PatientTransferShortFacilityViewSet(rest_mixins.ListModelMixin, rest_views
     permission_classes = (rest_permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        from_facility = self.request.GET.get('from_facility', None)
-        return patient_models.Patient.objects.filter(
-            id__in=patient_models.PatientFacility.objects.filter(
-                facility_id=from_facility
-            ).values_list('patient', flat=True)
-        ) if from_facility else patient_models.Patient.objects.all()
+        from_facility = self.request.GET.get("from_facility", None)
+        return (
+            patient_models.Patient.objects.filter(
+                id__in=patient_models.PatientFacility.objects.filter(facility_id=from_facility).values_list(
+                    "patient", flat=True
+                )
+            )
+            if from_facility
+            else patient_models.Patient.objects.all()
+        )
 
 
 class PatientFamilyViewSet(

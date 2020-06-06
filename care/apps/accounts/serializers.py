@@ -55,10 +55,9 @@ class ChangePasswordSerializer(BaseSetPasswordSerializer):
 
 
 class PortieSerializer(rest_serializers.ModelSerializer):
-
     class Meta:
         model = User
-        fields = ('id', 'name', 'phone_number', 'email')
+        fields = ("id", "name", "phone_number", "email")
 
 
 class UserSerializer(ChangePasswordSerializer):

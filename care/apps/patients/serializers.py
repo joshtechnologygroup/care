@@ -437,6 +437,10 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
     attendant_name = rest_serializers.SerializerMethodField()
     attendant_email = rest_serializers.SerializerMethodField()
     attendant_phone_number = rest_serializers.SerializerMethodField()
+    updated_symptoms = rest_serializers.SerializerMethodField()
+
+    def get_updated_symptoms(self, instance):
+        return instance.patientsymptom_set.all().values_list("symptom_id", flat=True)
 
     def get_attendant_name(self, instance):
         return ""
@@ -450,7 +454,7 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.Patient
         fields = (
-            "symptoms",
+            "updated_symptoms",
             "diseases",
             "covid_status",
             "clinical_status",
@@ -466,28 +470,16 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
         patient_symptoms = validated_data.pop("patient_symptoms", None)
         patient_diseases = validated_data.pop("patient_diseases", None)
         if patient_symptoms:
-            existing_symptoms = patient_models.PatientSymptom.objects.filter(patient=instance)
-            print(existing_symptoms)
-            preferred_symptoms = [
-                symptom
-                for symptom in patient_symptoms
-                if symptom not in existing_symptoms.values_list("symptom_id", flat=True)
-            ]
-            patient_models.PatientSymptom.objects.filter(
-                symptom_id__in=patient_symptoms, patient=instance
-            ).delete()
+            instance.patientsymptom_set.all().exclude(symptom__in=patient_symptoms).delete()
+            existing_symptoms = instance.patientsymptom_set.all().values_list(
+                "symptom_id", flat=True
+            )
             patient_models.PatientSymptom.objects.bulk_create(
                 [
                     patient_models.PatientSymptom(patient=instance, symptom_id=symptom)
-                    for symptom in preferred_symptoms
+                    for symptom in patient_symptoms if symptom not in existing_symptoms
                 ]
             )
-            # patient_models.PatientSymptom.objects.bulk_create(
-            #     [
-            #         patient_models.PatientSymptom(symptom_id=symptom, patient_id=patient_id)
-            #         for symptom in patient_symptoms
-            #     ]
-            # )
         if patient_diseases:
             patient_models.PatientDisease.objects.bulk_create(
                 [

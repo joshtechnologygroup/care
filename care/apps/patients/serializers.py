@@ -557,6 +557,7 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
     patient_timeline = rest_serializers.SerializerMethodField()
     facility_details = rest_serializers.SerializerMethodField()
     patient_lab_details = rest_serializers.SerializerMethodField()
+    patient_status = rest_serializers.SerializerMethodField()
 
     def get_patient_family_details(self, instance):
         return PatientFamilySerializer(patient_models.PatientFamily.objects.filter(patient=instance), many=True).data
@@ -587,6 +588,9 @@ class PatientDetailsSerializer(rest_serializers.Serializer):
 
     def get_personal_details(self, instance):
         return PersonalDetailsSerializer([instance], many=True).data
+
+    def get_patient_status(self, instance):
+        return instance.patient_status
 
     class Meta:
         model = None

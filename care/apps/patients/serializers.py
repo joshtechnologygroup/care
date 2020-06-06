@@ -437,7 +437,6 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
     attendant_name = rest_serializers.SerializerMethodField()
     attendant_email = rest_serializers.SerializerMethodField()
     attendant_phone_number = rest_serializers.SerializerMethodField()
-    updated_symptoms = rest_serializers.SerializerMethodField()
 
     def get_updated_symptoms(self, instance):
         return instance.patientsymptom_set.all().values_list("symptom_id", flat=True)
@@ -454,7 +453,7 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = patient_models.Patient
         fields = (
-            "updated_symptoms",
+            "symptoms",
             "diseases",
             "covid_status",
             "clinical_status",
@@ -471,20 +470,22 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
         patient_diseases = validated_data.pop("patient_diseases", None)
         if patient_symptoms:
             patient_models.PatientSymptom.all_objects.exclude(patient=instance, symptom__in=patient_symptoms).delete()
-            existing_symptoms = instance.patientsymptom_set.all().values_list(
-                "symptom_id", flat=True
-            )
+            existing_symptoms = instance.patientsymptom_set.all().values_list("symptom_id", flat=True)
             patient_models.PatientSymptom.objects.bulk_create(
                 [
                     patient_models.PatientSymptom(patient=instance, symptom_id=symptom)
-                    for symptom in patient_symptoms if symptom not in existing_symptoms
+                    for symptom in patient_symptoms
+                    if symptom not in existing_symptoms
                 ]
             )
         if patient_diseases:
+            patient_models.PatientDisease.all_objects.exclude(patient=instance, disease__in=patient_diseases).delete()
+            existing_diseases = instance.patientdisease_set.all().values_list("disease_id", flat=True)
             patient_models.PatientDisease.objects.bulk_create(
                 [
-                    patient_models.PatientDisease(disease_id=disease, patient_id=patient_id)
+                    patient_models.PatientDisease(patient=instance, disease_id=disease)
                     for disease in patient_diseases
+                    if disease not in existing_diseases
                 ]
             )
         return super().update(instance, validated_data)

@@ -149,6 +149,9 @@ class PatientDisease(commons_models.SoftDeleteTimeStampedModel):
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE)
     disease = models.ForeignKey("Disease", on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ("patient", "disease")
+
 
 class PatientSymptom(commons_models.SoftDeleteTimeStampedModel):
     patient = models.ForeignKey("Patient", on_delete=models.CASCADE)

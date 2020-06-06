@@ -33,12 +33,12 @@ class UserViewSet(rest_viewsets.ModelViewSet):
     queryset = accounts_models.User.objects.all()
     serializer_class = accounts_serializers.UserSerializer
 
-    @rest_decorators.action(methods=['get'], detail=False)
+    @rest_decorators.action(methods=["get"], detail=False)
     def portie(self, request, *args, **kwargs):
         return Response(
-            accounts_serializers.PortieSerializer(accounts_models.User.objects.filter(
-                user_type__name=commons_constants.PORTEA
-            ), many=True,).data
+            accounts_serializers.PortieSerializer(
+                accounts_models.User.objects.filter(user_type__name=commons_constants.PORTEA), many=True,
+            ).data
         )
 
 

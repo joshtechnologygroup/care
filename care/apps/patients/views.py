@@ -287,3 +287,36 @@ class PatientFamilyViewSet(
     serializer_class = patient_serializers.PatientFamilySerializer
     permission_classes = (rest_permissions.IsAuthenticated,)
     pagination_class = None
+
+
+class PersonalDetailsViewSet(rest_mixins.UpdateModelMixin, rest_viewsets.GenericViewSet):
+    """
+    view to update personal details of patient
+    """
+
+    queryset = patient_models.Patient.objects.all()
+    serializer_class = patient_serializers.PersonalDetailsSerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
+    pagination_class = None
+
+
+class ContactDetailsViewSet(rest_mixins.UpdateModelMixin, rest_viewsets.GenericViewSet):
+    """
+    view to update contact details of patient
+    """
+
+    queryset = patient_models.Patient.objects.all()
+    serializer_class = patient_serializers.ContactDetailsSerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
+    pagination_class = None
+
+
+class MedicationDetailsViewSet(rest_mixins.UpdateModelMixin, rest_viewsets.GenericViewSet):
+    """
+    view to update medication details of patient
+    """
+
+    queryset = patient_models.Patient.objects.all()
+    serializer_class = patient_serializers.MedicationDetailsSerializer
+    permission_classes = (rest_permissions.IsAuthenticated,)
+    pagination_class = None

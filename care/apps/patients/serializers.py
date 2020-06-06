@@ -432,6 +432,8 @@ class ContactDetailsSerializer(rest_serializers.ModelSerializer):
 
 
 class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
+    patient_symptoms = rest_serializers.ListField(required=False, write_only=True)
+    patient_diseases = rest_serializers.ListField(required=False, write_only=True)
     attendant_name = rest_serializers.SerializerMethodField()
     attendant_email = rest_serializers.SerializerMethodField()
     attendant_phone_number = rest_serializers.SerializerMethodField()
@@ -455,22 +457,29 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
             "attendant_name",
             "attendant_email",
             "attendant_phone_number",
+            "patient_symptoms",
+            "patient_diseases",
         )
 
-        def update(self, instance, validated_data):
-            print("enterrrrrrrrrrrrrr------------")
-            print(self.context["request"].parser_context["kwargs"])
-            # patient_symptoms = validated_data.pop("patient_symptoms", None)
-            # patient_diseases = validated_data.pop("patient_diseases", None)
-            # if patient_symptoms:
-            #     patient_models.PatientSymptom.objects.bulk_create(
-            #         [patient_models.PatientSymptom(symptom_id=symptom, patient=patient) for symptom in patient_symptoms]
-            #     )
-            # if patient_diseases:
-            #     patient_models.PatientDisease.objects.bulk_create(
-            #         [patient_models.PatientDisease(disease_id=disease, patient=patient) for disease in patient_diseases]
-            #     )
-            return super().update(instance, validated_data)
+    def update(self, instance, validated_data):
+        patient_id = self.context["request"].parser_context["kwargs"]["pk"]
+        patient_symptoms = validated_data.pop("patient_symptoms", None)
+        patient_diseases = validated_data.pop("patient_diseases", None)
+        if patient_symptoms:
+            patient_models.PatientSymptom.objects.bulk_create(
+                [
+                    patient_models.PatientSymptom(symptom_id=symptom, patient_id=patient_id)
+                    for symptom in patient_symptoms
+                ]
+            )
+        if patient_diseases:
+            patient_models.PatientDisease.objects.bulk_create(
+                [
+                    patient_models.PatientDisease(disease_id=disease, patient_id=patient_id)
+                    for disease in patient_diseases
+                ]
+            )
+        return super().update(instance, validated_data)
 
 
 class PatientFacilityDetailsSerializer(rest_serializers.ModelSerializer):

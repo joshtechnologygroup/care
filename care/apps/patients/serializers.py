@@ -155,8 +155,9 @@ class PatientTimeLineSerializer(rest_serializers.ModelSerializer):
 
 
 class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
-    portie_name = rest_serializers.CharField(source="user.name", read_only=True)
-    portie_phone_number = rest_serializers.CharField(source="user.phone_number", read_only=True)
+    portie_name = rest_serializers.CharField(source="portie.name", read_only=True)
+    portie_phone_number = rest_serializers.CharField(source="portie.phone_number", read_only=True)
+    patient_phone_number = rest_serializers.CharField(source="patient_number")
 
     class Meta:
         model = patient_models.PortieCallingDetail
@@ -167,8 +168,10 @@ class PortieCallingDetailSerialzier(rest_serializers.ModelSerializer):
             "called_at",
             "able_to_connect",
             "comments",
+            "relation",
             "portie_name",
             "portie_phone_number",
+            "patient_phone_number",
         )
 
     def validate_patient(self, patient):
@@ -385,16 +388,13 @@ class PatientFamilySerializer(rest_serializers.ModelSerializer):
 class PortieCallingDetailsSerializer(rest_serializers.ModelSerializer):
     name = rest_serializers.SerializerMethodField()
     portie_phone_number = rest_serializers.SerializerMethodField()
-    patient_phone_number = rest_serializers.SerializerMethodField()
+    patient_phone_number = rest_serializers.CharField(source="patient_number")
 
     def get_name(self, instance):
         return instance.portie.name
 
     def get_portie_phone_number(self, instance):
         return instance.portie.phone_number
-
-    def get_patient_phone_number(self, instance):
-        return instance.patient_number
 
     class Meta:
         model = patient_models.PortieCallingDetail

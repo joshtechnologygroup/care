@@ -121,12 +121,16 @@ RECOVERED = "recovered"
 DEAD = "dead"
 FACILITY_STATUS = "facility-status"
 
+PATIENT_STATUS = namedtuple("PATIENT_STATUS", ["HOME_ISOLATION", "RECOVERED", "DEAD", "FACILITY_STATUS"])(
+    HOME_ISOLATION=1, RECOVERED=2, DEAD=3, FACILITY_STATUS=4
+)
+
 # Paitient status Choices
 PATIENT_STATUS_CHOICES = (
-    (HOME_ISOLATION, "Home Isolation"),
-    (RECOVERED, "Recovered"),
-    (DEAD, "Dead"),
-    (FACILITY_STATUS, "Facility Status"),
+    (PATIENT_STATUS.HOME_ISOLATION, "Home Isolation"),
+    (PATIENT_STATUS.RECOVERED, "Recovered"),
+    (PATIENT_STATUS.DEAD, "Dead"),
+    (PATIENT_STATUS.FACILITY_STATUS, "Facility Status"),
 )
 
 # Patient Transfer Constants

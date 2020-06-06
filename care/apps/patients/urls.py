@@ -22,6 +22,9 @@ routers.register(
 routers.register(
     "family-members", patients_views.PatientFamilyViewSet, basename="family_member",
 )
+routers.register("personal-details", patients_views.PersonalDetailsViewSet, basename="personal_detail")
+routers.register("contact-details", patients_views.ContactDetailsViewSet, basename="contact_detail")
+routers.register("medication-details", patients_views.MedicationDetailsViewSet, basename="medication_detail")
 
 routers.register("", patients_views.PatientViewSet, basename="patient")
 

@@ -162,7 +162,7 @@ class PortieCallingDetailViewSet(
     permission_classes = (rest_permissions.IsAuthenticated,)
 
     def get_serializer_class(self):
-        if self.action == 'update':
+        if self.action == "update":
             return patient_serializers.PortieCallingUpdateSerializer
         return patient_serializers.PortieCallingDetailSerialzier
 

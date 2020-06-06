@@ -38,7 +38,8 @@ class UserViewSet(rest_viewsets.ModelViewSet):
     def portea(self, *args, **kwargs):
         return Response(
             accounts_serializers.PorteaSerializer(
-                instance=accounts_models.User.objects.filter(user_type__name__iexact=commons_constants.PORTEA), many=True,
+                instance=accounts_models.User.objects.filter(user_type__name__iexact=commons_constants.PORTEA),
+                many=True,
             ).data
         )
 

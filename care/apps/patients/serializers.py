@@ -470,7 +470,7 @@ class MedicationDetailsSerializer(rest_serializers.ModelSerializer):
         patient_symptoms = validated_data.pop("patient_symptoms", None)
         patient_diseases = validated_data.pop("patient_diseases", None)
         if patient_symptoms:
-            instance.patientsymptom_set.all().exclude(symptom__in=patient_symptoms).delete()
+            patient_models.PatientSymptom.all_objects.exclude(patient=instance, symptom__in=patient_symptoms).delete()
             existing_symptoms = instance.patientsymptom_set.all().values_list(
                 "symptom_id", flat=True
             )

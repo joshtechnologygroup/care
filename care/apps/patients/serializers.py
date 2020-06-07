@@ -21,9 +21,6 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
             "admitted_at",
             "discharged_at",
         )
-        extra_kwargs = {
-            "patient_facility_id": {"required": False},
-        }
 
 
 class GenderField(rest_serializers.RelatedField):

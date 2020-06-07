@@ -21,6 +21,9 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
             "admitted_at",
             "discharged_at",
         )
+        extra_kwargs = {
+            "patient_facility_id": {"required": False},
+        }
 
 
 class GenderField(rest_serializers.RelatedField):
@@ -430,6 +433,8 @@ class ContactDetailsSerializer(rest_serializers.ModelSerializer):
             "phone_number_belongs_to",
             "local_body",
             "pincode",
+            "native_state",
+            "native_country",
         )
 
 

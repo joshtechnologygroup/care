@@ -129,7 +129,9 @@ class Patient(commons_models.SoftDeleteTimeStampedModel, commons_models.AddressM
         choices=constants.PATIENT_STATUS_CHOICES, default=constants.PATIENT_STATUS.FACILITY_STATUS
     )
     pincode = models.CharField(max_length=6, null=True, blank=True)
-    native_state = models.CharField(max_length=40, null=True, blank=True)
+    native_state = models.ForeignKey(
+        "accounts.State", on_delete=models.PROTECT, null=True, blank=True, related_name="native_state"
+    )
     native_country = models.CharField(max_length=56, null=True, blank=True)
 
     history = HistoricalRecords()
@@ -210,7 +212,7 @@ class PatientFacility(commons_models.SoftDeleteTimeStampedModel):
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
-    patient_facility_id = models.CharField(max_length=15)
+    patient_facility_id = models.CharField(max_length=15, null=True, blank=True, default="1")
     patient_status = models.ForeignKey("PatientStatus", on_delete=models.CASCADE)
     discharged_at = models.DateTimeField(null=True, blank=True)
     admitted_at = models.DateTimeField(null=True, blank=True)

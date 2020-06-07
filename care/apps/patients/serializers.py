@@ -430,6 +430,8 @@ class ContactDetailsSerializer(rest_serializers.ModelSerializer):
             "phone_number_belongs_to",
             "local_body",
             "pincode",
+            "native_state",
+            "native_country",
         )
 
 

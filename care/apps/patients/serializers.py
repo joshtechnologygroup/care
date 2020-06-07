@@ -22,6 +22,13 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
             "discharged_at",
         )
 
+    def validate(self, attrs):
+        if attrs["patient_status"].name != patient_constants.ADMITTED_TO_FACILITY and not attrs.get("discharged_at"):
+            raise rest_serializers.ValidationError(_("Discharged date is required for patient facility status"))
+        elif attrs["patient_status"].name == patient_constants.ADMITTED_TO_FACILITY and not attrs.get("admitted_at"):
+            raise rest_serializers.ValidationError(_("Admitted date is required for patient facility status"))
+        return attrs
+
 
 class GenderField(rest_serializers.RelatedField):
     def to_internal_value(self, data):
@@ -40,7 +47,7 @@ class PatientSerializer(rest_serializers.ModelSerializer):
     patient_facility = PatientFacilitySerializer(required=False, write_only=True)
     patient_symptoms = rest_serializers.ListField(required=False)
     patient_diseases = rest_serializers.ListField(required=False)
-    patient_status = rest_serializers.SerializerMethodField()
+    status = rest_serializers.SerializerMethodField()
     gender = GenderField(queryset=patient_models.Patient.objects.none())
     ownership_type = rest_serializers.CharField(read_only=True)
     facility_type = rest_serializers.CharField(read_only=True)
@@ -78,15 +85,30 @@ class PatientSerializer(rest_serializers.ModelSerializer):
             "patient_facility",
             "patient_symptoms",
             "patient_diseases",
+            "status",
+            "patient_status",
         )
         extra_kwargs = {
             "address": {"required": False},
+            "patient_status": {"required": False},
         }
 
-    def get_patient_status(self, instance):
+    def get_status(self, instance):
         if instance.patient_status == patient_constants.FACILITY_STATUS:
             return instance.facility_status
         return instance.patient_status
+
+    def validate(self, attrs):
+        statuses = [
+            patient_constants.PATIENT_STATUS.HOME_ISOLATION,
+            patient_constants.PATIENT_STATUS.FACILITY_STATUS,
+        ]
+        status = attrs.get("patient_status")
+        facility = attrs.get("patient_facility")
+        if status and status not in statuses:
+            if facility and not facility.get("discharged_at") or facility is None:
+                raise rest_serializers.ValidationError(_("Discharged date is required for patient status"))
+        return attrs
 
     def create(self, validated_data):
         patient_facility = validated_data.pop("patient_facility", None)

@@ -280,7 +280,7 @@ class PatientSampleTest(commons_models.SoftDeleteTimeStampedModel):
     testing_lab = models.ForeignKey(TestingLab, on_delete=models.PROTECT, related_name="labs")
     doctor_name = models.CharField(max_length=255, null=True, blank=True)
     result = models.IntegerField(choices=SAMPLE_TEST_RESULT_CHOICES, default=constants.SAMPLE_TEST_RESULT_MAP.SS)
-    date_of_sample = models.DateTimeField(auto_now_add=True, verbose_name="date at which sample tested")
+    date_of_sample = models.DateTimeField(verbose_name="date at which sample tested")
     date_of_result = models.DateTimeField(null=True, blank=True, verbose_name="date of result of sample")
     status_updated_at = models.DateTimeField(auto_now=True, verbose_name="date at which sample updated")
 

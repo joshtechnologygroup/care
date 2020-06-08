@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, F
 from django_filters import rest_framework as filters
 from django_filters import fields as filter_fields
 from django import forms
@@ -53,14 +53,24 @@ class PatientFilter(filters.FilterSet):
     facility_type = filters.ModelMultipleChoiceFilter(
         field_name="patientfacility__facility__facility_type", queryset=facility_models.FacilityType.objects.all()
     )
-    facility_owned_by = filters.ModelMultipleChoiceFilter(
+    ownership_type = filters.ModelMultipleChoiceFilter(
         field_name="patientfacility__facility__owned_by", queryset=commons_models.OwnershipType.objects.all()
     )
     patient_status = filters.MultipleChoiceFilter(
         field_name="patient_status",
-        # method="filter_patient_status",
         choices=patient_constants.PATIENT_STATUS_CHOICES,
     )
+
+    def filter_queryset(self, queryset):
+        qs = super().filter_queryset(queryset)
+        # TODO Move below annotate to view
+        return qs.annotate(
+            facility_status=F("patientfacility__patient_status__name"),
+            facility=F("patientfacility__facility__name"),
+            facility_type=F("patientfacility__facility__facility_type__name"),
+            ownership_type=F("patientfacility__facility__owned_by__name"),
+            facility_district=F("patientfacility__facility__district__name"),
+        )
 
     def filter_patient_status(self, queryset, name, value):
         if value:
@@ -73,7 +83,6 @@ class PatientFilter(filters.FilterSet):
             "name",
             "icmr",
             "govt",
-            "facility",
             "gender",
             "year",
             "month",
@@ -87,9 +96,10 @@ class PatientFilter(filters.FilterSet):
             "clinical_status_updated_at",
             "portea_called_at",
             "portea_able_to_connect",
+            "facility",
             "facility_district",
             "facility_type",
-            "facility_owned_by",
+            "ownership_type",
         )
 
 

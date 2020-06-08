@@ -56,10 +56,13 @@ class FacilityInfrastructureFilter(filters.FilterSet):
 
 class FacilityStaffFilter(filters.FilterSet):
     facility = filters.ModelMultipleChoiceFilter(queryset=facility_models.Facility.objects.all())
-    name = filters.CharFilter()
+    name = filters.CharFilter(lookup_expr='istartswith')
     phone_number = filters.CharFilter()
     email = filters.CharFilter()
-    designation = filters.ModelMultipleChoiceFilter(queryset=facility_models.StaffDesignation.objects.all())
+    designation = filters.ModelMultipleChoiceFilter(
+        field_name="designation__name",
+        queryset=facility_models.StaffDesignation.objects.all()
+    )
 
     class Meta:
         model = facility_models.FacilityStaff

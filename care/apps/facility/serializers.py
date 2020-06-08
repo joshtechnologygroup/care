@@ -1,6 +1,10 @@
 from django.utils.translation import ugettext as _
 
-from rest_framework import serializers as rest_serializers
+from rest_framework import (
+    serializers as rest_serializers,
+    validators as rest_validators
+)
+# from rest_framework.validators import UniqueTogetherValidator
 
 from apps.commons import constants as commons_constants
 from apps.facility import models as facility_models
@@ -91,6 +95,13 @@ class FacilityStaffSerializer(rest_serializers.ModelSerializer, FacilityFieldVal
             "email",
             "designation",
         )
+        validators = [
+            rest_validators.UniqueTogetherValidator(
+                queryset=facility_models.FacilityStaff.objects.all(),
+                fields=['facility', 'name', 'phone_number', 'email', 'designation'],
+                message='Staff with the same data, already exists'
+            )
+        ]
 
 
 class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
@@ -106,6 +117,10 @@ class FacilityStaffUpdateSerializer(rest_serializers.ModelSerializer):
 
 class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, FacilityFieldValidationMixin):
     def validate(self, attrs):
+        total_bed, occupied_bed, available_bed = attrs.get('total_bed'), attrs.get('occupied_bed'), attrs.get(
+            'available_bed')
+        if total_bed < occupied_bed + available_bed:
+            raise rest_serializers.ValidationError(_("Invalid data"))
         attrs["created_by"] = self.context["request"].user
         return attrs
 
@@ -121,9 +136,23 @@ class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, Facilit
             "available_bed",
             "updated_at",
         )
+        validators = [
+            rest_validators.UniqueTogetherValidator(
+                queryset=facility_models.FacilityInfrastructure.objects.all(),
+                fields=['facility', 'room_type', 'bed_type'],
+                message='Facility with the same data, already exists.'
+            )
+        ]
 
 
 class FacilityInfrastructureUpdateSerializer(rest_serializers.ModelSerializer):
+    def validate(self, attrs):
+        total_bed, occupied_bed, available_bed = attrs.get('total_bed'), attrs.get('occupied_bed'), attrs.get(
+            'available_bed')
+        if total_bed < occupied_bed + available_bed:
+            raise rest_serializers.ValidationError(_("Invalid data"))
+        return attrs
+
     class Meta:
         model = facility_models.FacilityInfrastructure
         fields = (

@@ -117,6 +117,9 @@ class FacilityInfrastructure(commons_models.TimeStampModel):
 
     history = HistoricalRecords()
 
+    class Meta:
+        unique_together = ("facility", "room_type", "bed_type")
+
 
 class InventoryItem(models.Model):
     name = models.CharField(max_length=30, unique=True)

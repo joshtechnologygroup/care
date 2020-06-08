@@ -12,6 +12,10 @@ from apps.facility import models as facility_models
 
 
 class PatientFacilitySerializer(rest_serializers.ModelSerializer):
+    transfer_facility = rest_serializers.PrimaryKeyRelatedField(
+        queryset=facility_models.Facility.objects.all(), write_only=True
+    )
+
     class Meta:
         model = patient_models.PatientFacility
         fields = (
@@ -20,6 +24,7 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
             "patient_facility_id",
             "admitted_at",
             "discharged_at",
+            "transfer_facility",
         )
 
     def validate(self, attrs):
@@ -27,6 +32,12 @@ class PatientFacilitySerializer(rest_serializers.ModelSerializer):
             raise rest_serializers.ValidationError(_("Discharged date is required for patient facility status"))
         elif attrs["patient_status"].name == patient_constants.ADMITTED_TO_FACILITY and not attrs.get("admitted_at"):
             raise rest_serializers.ValidationError(_("Admitted date is required for patient facility status"))
+        elif attrs["patient_status"].name == patient_constants.TRANSFERRED_TO_ANOTHER_FACILITY and not attrs.get(
+            "transfer_facility"
+        ):
+            raise rest_serializers.ValidationError(
+                _("Transfer Facility is required for transfering patient to another facility")
+            )
         return attrs
 
 
@@ -111,7 +122,22 @@ class PatientSerializer(rest_serializers.ModelSerializer):
         patient_diseases = validated_data.pop("patient_diseases", None)
         patient = super().create(validated_data)
         if patient_facility:
-            patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
+            transfer_facility = patient_facility.pop("transfer_facility", None)
+            from_facility = patient_models.PatientFacility.objects.create(**patient_facility, patient=patient)
+            if transfer_facility:
+                admitted_at = patient_facility.pop("discharged_at", None)
+                to_facility = patient_models.PatientFacility.objects.create(
+                    facility=transfer_facility,
+                    admitted_at=admitted_at,
+                    patient_status_id=patient_constants.ADMITTED_TO_FACILITY_STATUS_VALUE,
+                    patient=patient,
+                )
+                patient_models.PatientTransfer.objects.create(
+                    from_patient_facility=from_facility,
+                    to_facility=transfer_facility,
+                    status=patient_constants.TRANSFER_STATUS.ACCEPTED,
+                    status_updated_at=datetime.now(),
+                )
         if patient_symptoms:
             patient_models.PatientSymptom.objects.bulk_create(
                 [patient_models.PatientSymptom(symptom_id=symptom, patient=patient) for symptom in patient_symptoms]

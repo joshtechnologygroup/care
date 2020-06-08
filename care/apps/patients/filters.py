@@ -63,6 +63,7 @@ class PatientFilter(filters.FilterSet):
 
     def filter_queryset(self, queryset):
         qs = super().filter_queryset(queryset)
+        # TODO Move below annotate to view
         return qs.annotate(
             facility_status=F("patientfacility__patient_status__name"),
             facility=F("patientfacility__facility__name"),

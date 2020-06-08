@@ -3,7 +3,10 @@ from django_filters import rest_framework as filters
 from django_filters import fields as filter_fields
 from django import forms
 
-from apps.commons import constants as common_constants
+from apps.commons import (
+    constants as common_constants,
+    models as commons_models,
+)
 from apps.facility import models as facility_models
 from apps.patients import models as patients_models, constants as patient_constants
 from apps.accounts import models as accounts_models
@@ -21,7 +24,6 @@ class PatientFilter(filters.FilterSet):
     name = filters.CharFilter(field_name="name", lookup_expr="istartswith")
     icmr = filters.CharFilter(field_name="icmr_id", lookup_expr="istartswith")
     govt = filters.CharFilter(field_name="govt_id", lookup_expr="istartswith")
-    facility = filters.CharFilter(field_name="facility")
     gender = filters.MultipleChoiceFilter(field_name="gender", choices=common_constants.GENDER_CHOICES)
     year = filters.RangeFilter(field_name="year", lookup_expr="range")
     month = filters.RangeFilter(field_name="month", lookup_expr="range")
@@ -40,14 +42,20 @@ class PatientFilter(filters.FilterSet):
         field_name="clinical_status", choices=patients_models.ClinicalStatus.objects.all().values_list("id", "name"),
     )
     clinical_status_updated_at = filters.DateFromToRangeFilter(field_name="clinical_status_updated_at")
+    facility = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility", queryset=facility_models.Facility.objects.all()
+    )
     portea_called_at = filters.DateFromToRangeFilter(field_name="portea_called_at")
     portea_able_to_connect = filters.BooleanFilter(field_name="portea_able_to_connect")
-    facility_name = filters.MultipleChoiceFilter(
-        field_name="facility", choices=patients_models.Facility.objects.all().values_list("id", "name"),
+    facility_district = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility__district", queryset=accounts_models.District.objects.all()
     )
-    facility_district = filters.CharFilter(field_name="facility__district")
-    facility_type = filters.CharFilter(field_name="facility__facility_type")
-    facility_owned_by = filters.CharFilter(field_name="facility__owned_by")
+    facility_type = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility__facility_type", queryset=facility_models.FacilityType.objects.all()
+    )
+    facility_owned_by = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility__owned_by", queryset=commons_models.OwnershipType.objects.all()
+    )
     patient_status = filters.MultipleChoiceFilter(
         field_name="patient_status",
         # method="filter_patient_status",
@@ -79,7 +87,6 @@ class PatientFilter(filters.FilterSet):
             "clinical_status_updated_at",
             "portea_called_at",
             "portea_able_to_connect",
-            "facility_name",
             "facility_district",
             "facility_type",
             "facility_owned_by",

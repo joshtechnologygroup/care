@@ -86,13 +86,6 @@ class PatientViewSet(rest_viewsets.ModelViewSet):
                 )
             )
             queryset = queryset.filter(patientfacility__facility_id__in=facility_ids)
-        queryset = queryset.annotate(
-            facility_status=F("patientfacility__patient_status__name"),
-            facility_name=F("patientfacility__facility__name"),
-            facility_type=F("patientfacility__facility__facility_type__name"),
-            ownership_type=F("patientfacility__facility__owned_by__name"),
-            facility_district=F("patientfacility__facility__district__name"),
-        )
         return queryset
 
     def create(self, request, *args, **kwargs):

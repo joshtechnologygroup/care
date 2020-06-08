@@ -1,9 +1,12 @@
-from django.db.models import Q
+from django.db.models import Q, F
 from django_filters import rest_framework as filters
 from django_filters import fields as filter_fields
 from django import forms
 
-from apps.commons import constants as common_constants
+from apps.commons import (
+    constants as common_constants,
+    models as commons_models,
+)
 from apps.facility import models as facility_models
 from apps.patients import models as patients_models, constants as patient_constants
 from apps.accounts import models as accounts_models
@@ -21,7 +24,6 @@ class PatientFilter(filters.FilterSet):
     name = filters.CharFilter(field_name="name", lookup_expr="istartswith")
     icmr = filters.CharFilter(field_name="icmr_id", lookup_expr="istartswith")
     govt = filters.CharFilter(field_name="govt_id", lookup_expr="istartswith")
-    # facility = filters.CharFilter(field_name="facility")
     gender = filters.MultipleChoiceFilter(field_name="gender", choices=common_constants.GENDER_CHOICES)
     year = filters.RangeFilter(field_name="year", lookup_expr="range")
     month = filters.RangeFilter(field_name="month", lookup_expr="range")
@@ -40,23 +42,34 @@ class PatientFilter(filters.FilterSet):
         field_name="clinical_status", choices=patients_models.ClinicalStatus.objects.all().values_list("id", "name"),
     )
     clinical_status_updated_at = filters.DateFromToRangeFilter(field_name="clinical_status_updated_at")
+    facility_name = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility", queryset=facility_models.Facility.objects.all()
+    )
     portea_called_at = filters.DateFromToRangeFilter(field_name="portea_called_at")
     portea_able_to_connect = filters.BooleanFilter(field_name="portea_able_to_connect")
-    facility_name = filters.CharFilter(
-        field_name="current_facility__patientfacility__facility",
-        # choices=facility_models.Facility.objects.all().values_list("id", "name"),
-        # queryset=facility_models.Facility.objects.all()
+    facility_district = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility__district", queryset=accounts_models.District.objects.all()
     )
-    facility_district = filters.CharFilter(field_name="patientfacility__facility__district")
-    facility_type = filters.CharFilter(
-        field_name="patientfacility__facility__facility_type",
-        # choices=facility_models.FacilityType.objects.all().values_list("id", "name"),
+    facility_type = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility__facility_type", queryset=facility_models.FacilityType.objects.all()
     )
-    facility_owned_by = filters.CharFilter(field_name="patientfacility__facility__owned_by")
+    ownership_type = filters.ModelMultipleChoiceFilter(
+        field_name="patientfacility__facility__owned_by", queryset=commons_models.OwnershipType.objects.all()
+    )
     patient_status = filters.MultipleChoiceFilter(
         field_name="patient_status",
         choices=patient_constants.PATIENT_STATUS_CHOICES,
     )
+
+    def filter_queryset(self, queryset):
+        qs = super().filter_queryset(queryset)
+        return qs.annotate(
+            facility_status=F("patientfacility__patient_status__name"),
+            facility_name=F("patientfacility__facility__name"),
+            facility_type=F("patientfacility__facility__facility_type__name"),
+            ownership_type=F("patientfacility__facility__owned_by__name"),
+            facility_district=F("patientfacility__facility__district__name"),
+        )
 
     def filter_patient_status(self, queryset, name, value):
         if value:
@@ -69,7 +82,6 @@ class PatientFilter(filters.FilterSet):
             "name",
             "icmr",
             "govt",
-            # "facility",
             "gender",
             "year",
             "month",
@@ -86,7 +98,7 @@ class PatientFilter(filters.FilterSet):
             "facility_name",
             "facility_district",
             "facility_type",
-            "facility_owned_by",
+            "ownership_type",
         )
 
 

@@ -55,11 +55,8 @@ class FacilityInfrastructureFilter(filters.FilterSet):
 
 
 class FacilityStaffFilter(filters.FilterSet):
-    def filter_name_startswith(queryset, name, value):
-        return queryset.filter(name__startswith=value)
-
     facility = filters.ModelMultipleChoiceFilter(queryset=facility_models.Facility.objects.all())
-    name = filters.CharFilter(method=filter_name_startswith)
+    name = filters.CharFilter(lookup_expr='istartswith')
     phone_number = filters.CharFilter()
     email = filters.CharFilter()
     designation = filters.ModelMultipleChoiceFilter(

@@ -51,7 +51,7 @@ class PatientSerializer(rest_serializers.ModelSerializer):
     gender = GenderField(queryset=patient_models.Patient.objects.none())
     ownership_type = rest_serializers.CharField(read_only=True)
     facility_type = rest_serializers.CharField(read_only=True)
-    facility_name = rest_serializers.CharField(read_only=True)
+    facility = rest_serializers.CharField(read_only=True)
     facility_district = rest_serializers.CharField(read_only=True)
 
     class Meta:
@@ -75,7 +75,7 @@ class PatientSerializer(rest_serializers.ModelSerializer):
             "clinical_status_updated_at",
             "portea_called_at",
             "portea_able_to_connect",
-            "facility_name",
+            "facility",
             "facility_district",
             "facility_type",
             "ownership_type",

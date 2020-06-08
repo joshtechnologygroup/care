@@ -42,7 +42,7 @@ class PatientFilter(filters.FilterSet):
         field_name="clinical_status", choices=patients_models.ClinicalStatus.objects.all().values_list("id", "name"),
     )
     clinical_status_updated_at = filters.DateFromToRangeFilter(field_name="clinical_status_updated_at")
-    facility_name = filters.ModelMultipleChoiceFilter(
+    facility = filters.ModelMultipleChoiceFilter(
         field_name="patientfacility__facility", queryset=facility_models.Facility.objects.all()
     )
     portea_called_at = filters.DateFromToRangeFilter(field_name="portea_called_at")
@@ -65,7 +65,7 @@ class PatientFilter(filters.FilterSet):
         qs = super().filter_queryset(queryset)
         return qs.annotate(
             facility_status=F("patientfacility__patient_status__name"),
-            facility_name=F("patientfacility__facility__name"),
+            facility=F("patientfacility__facility__name"),
             facility_type=F("patientfacility__facility__facility_type__name"),
             ownership_type=F("patientfacility__facility__owned_by__name"),
             facility_district=F("patientfacility__facility__district__name"),
@@ -95,7 +95,7 @@ class PatientFilter(filters.FilterSet):
             "clinical_status_updated_at",
             "portea_called_at",
             "portea_able_to_connect",
-            "facility_name",
+            "facility",
             "facility_district",
             "facility_type",
             "ownership_type",

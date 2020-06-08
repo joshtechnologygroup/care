@@ -89,9 +89,6 @@ class FacilityStaff(commons_models.SoftDeleteTimeStampedModel):
     def __str__(self):
         return f"{self.facility}::{self.name}"
 
-    # class Meta:
-    #     unique_together = ("facility", "room_type", "bed_type")
-
 
 class RoomType(models.Model):
     name = models.CharField(max_length=25)

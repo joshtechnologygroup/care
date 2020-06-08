@@ -99,7 +99,7 @@ class FacilityStaffSerializer(rest_serializers.ModelSerializer, FacilityFieldVal
             rest_validators.UniqueTogetherValidator(
                 queryset=facility_models.FacilityStaff.objects.all(),
                 fields=['facility', 'name', 'phone_number', 'email', 'designation'],
-                message='An Object already exists'
+                message='Staff with the same data, already exists'
             )
         ]
 
@@ -140,7 +140,7 @@ class FacilityInfrastructureSerializer(rest_serializers.ModelSerializer, Facilit
             rest_validators.UniqueTogetherValidator(
                 queryset=facility_models.FacilityInfrastructure.objects.all(),
                 fields=['facility', 'room_type', 'bed_type'],
-                message='An Object already exists'
+                message='Facility with the same data, already exists.'
             )
         ]
 

@@ -21,7 +21,7 @@ class PatientFilter(filters.FilterSet):
     name = filters.CharFilter(field_name="name", lookup_expr="istartswith")
     icmr = filters.CharFilter(field_name="icmr_id", lookup_expr="istartswith")
     govt = filters.CharFilter(field_name="govt_id", lookup_expr="istartswith")
-    facility = filters.CharFilter(field_name="facility")
+    # facility = filters.CharFilter(field_name="facility")
     gender = filters.MultipleChoiceFilter(field_name="gender", choices=common_constants.GENDER_CHOICES)
     year = filters.RangeFilter(field_name="year", lookup_expr="range")
     month = filters.RangeFilter(field_name="month", lookup_expr="range")
@@ -42,15 +42,19 @@ class PatientFilter(filters.FilterSet):
     clinical_status_updated_at = filters.DateFromToRangeFilter(field_name="clinical_status_updated_at")
     portea_called_at = filters.DateFromToRangeFilter(field_name="portea_called_at")
     portea_able_to_connect = filters.BooleanFilter(field_name="portea_able_to_connect")
-    facility_name = filters.MultipleChoiceFilter(
-        field_name="facility", choices=patients_models.Facility.objects.all().values_list("id", "name"),
+    facility_name = filters.CharFilter(
+        field_name="current_facility__patientfacility__facility",
+        # choices=facility_models.Facility.objects.all().values_list("id", "name"),
+        # queryset=facility_models.Facility.objects.all()
     )
-    facility_district = filters.CharFilter(field_name="facility__district")
-    facility_type = filters.CharFilter(field_name="facility__facility_type")
-    facility_owned_by = filters.CharFilter(field_name="facility__owned_by")
+    facility_district = filters.CharFilter(field_name="patientfacility__facility__district")
+    facility_type = filters.CharFilter(
+        field_name="patientfacility__facility__facility_type",
+        # choices=facility_models.FacilityType.objects.all().values_list("id", "name"),
+    )
+    facility_owned_by = filters.CharFilter(field_name="patientfacility__facility__owned_by")
     patient_status = filters.MultipleChoiceFilter(
         field_name="patient_status",
-        # method="filter_patient_status",
         choices=patient_constants.PATIENT_STATUS_CHOICES,
     )
 
@@ -65,7 +69,7 @@ class PatientFilter(filters.FilterSet):
             "name",
             "icmr",
             "govt",
-            "facility",
+            # "facility",
             "gender",
             "year",
             "month",

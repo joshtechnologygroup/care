@@ -89,6 +89,9 @@ class FacilityStaff(commons_models.SoftDeleteTimeStampedModel):
     def __str__(self):
         return f"{self.facility}::{self.name}"
 
+    # class Meta:
+    #     unique_together = ("facility", "room_type", "bed_type")
+
 
 class RoomType(models.Model):
     name = models.CharField(max_length=25)
@@ -116,6 +119,9 @@ class FacilityInfrastructure(commons_models.TimeStampModel):
     created_by = models.ForeignKey(accounts_models.User, on_delete=models.CASCADE)
 
     history = HistoricalRecords()
+
+    class Meta:
+        unique_together = ("facility", "room_type", "bed_type")
 
 
 class InventoryItem(models.Model):

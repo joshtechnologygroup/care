@@ -240,7 +240,7 @@ class PatientFamily(commons_models.SoftDeleteTimeStampedModel, commons_models.Ad
     relation = models.CharField(max_length=55)
     age_month = models.PositiveIntegerField()
     age_year = models.PositiveIntegerField()
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
     gender = models.IntegerField(choices=commons_constants.GENDER_CHOICES, blank=False)
 
     def __str__(self):
@@ -270,7 +270,6 @@ class PatientSampleTest(commons_models.SoftDeleteTimeStampedModel):
 
     SAMPLE_TEST_RESULT_CHOICES = [
         (constants.SAMPLE_TEST_RESULT_MAP.SS, "Sample Sent"),
-        (constants.SAMPLE_TEST_RESULT_MAP.RP, "Report Pending"),
         (constants.SAMPLE_TEST_RESULT_MAP.PO, "Positive"),
         (constants.SAMPLE_TEST_RESULT_MAP.NG, "Negative"),
         (constants.SAMPLE_TEST_RESULT_MAP.PP, "Presumptive Positive"),

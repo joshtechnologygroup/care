@@ -99,15 +99,10 @@ class PatientSerializer(rest_serializers.ModelSerializer):
         return instance.patient_status
 
     def validate(self, attrs):
-        statuses = [
-            patient_constants.PATIENT_STATUS.HOME_ISOLATION,
-            patient_constants.PATIENT_STATUS.FACILITY_STATUS,
-        ]
         status = attrs.get("patient_status")
         facility = attrs.get("patient_facility")
-        if status and status not in statuses:
-            if facility and not facility.get("discharged_at") or facility is None:
-                raise rest_serializers.ValidationError(_("Discharged date is required for patient status"))
+        if status and status == patient_constants.PATIENT_STATUS.FACILITY_STATUS and not facility:
+            raise rest_serializers.ValidationError(_("patient facility is required to admit the patient in facility"))
         return attrs
 
     def create(self, validated_data):
